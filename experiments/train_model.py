@@ -1,12 +1,15 @@
-from azureml.core import Run
+# Import libraries
+from azureml.core import Run, Model
 import argparse
 import joblib
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import roc_curve, roc_auc_score
+from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_curve
 
 # Get the experiment run context
 run = Run.get_context() 	                                        # method to retrieve the experiment run context when the script is run
@@ -16,26 +19,22 @@ run = Run.get_context() 	                                        # method to ret
 * increase the flexibility of your training experiment by adding parameters to your script
 * enabling you to repeat the same training experiment with different settings
 """
-# Get the script arguments (regularization rate and training dataset ID)
 parser = argparse.ArgumentParser()
+parser.add_argument("--training-data", type=str, dest='training_data', help='training data')
 parser.add_argument('--regularization', type=float, dest='reg_rate', default=0.01, help='regularization rate')
-parser.add_argument("--input-data", type=str, dest='training_dataset_id', help='training dataset')
-# parser.add_argument('--input-data', type=str, dest='dataset_folder', help='data mount point') # Using file dataset
 args = parser.parse_args()
+
+# Set training data from prepared data
+training_data = args.training_data
 
 # Set regularization hyperparameter (passed as an argument to the script)
 reg = args.reg_rate
 
 #-----DATA---------------------------------------------------------------------#
-# load the dataset
+# load the prepared data file in the training folder
 print("Loading Data...")
-diabetes = run.input_datasets['training_data'].to_pandas_dataframe()
-
-# Using file dataset instead of tabular data:
-    # data_path = run.input_datasets['training_files'] # Get the training data path from the input using a file dataset
-    # (You could also just use args.dataset_folder if you don't want to rely on a hard-coded friendly name)
-    # all_files = glob.glob(data_path + "/*.csv") # Read the files
-    # diabetes = pd.concat((pd.read_csv(f) for f in all_files), sort=False)
+file_path = os.path.join(training_data,'data.csv')
+diabetes = pd.read_csv(file_path)
 
 # Separate features and labels
 X, y = diabetes[['Pregnancies','PlasmaGlucose','DiastolicBloodPressure','TricepsThickness','SerumInsulin','BMI','DiabetesPedigree','Age']].values, diabetes['Diabetic'].values
@@ -44,9 +43,6 @@ X, y = diabetes[['Pregnancies','PlasmaGlucose','DiastolicBloodPressure','Triceps
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=0)
 
 #-----MODEL--------------------------------------------------------------------#
-# Set regularization hyperparameter
-reg = 0.01
-
 # Train a logistic regression model
 print('Training a logistic regression model with regularization rate of', reg)
 run.log('Regularization Rate',  float(reg))
@@ -65,9 +61,32 @@ auc = roc_auc_score(y_test,y_scores[:,1])
 print('AUC: ' + str(auc))
 run.log('AUC', float(auc))
 
-# Save the trained model in the outputs folder
-os.makedirs('outputs', exist_ok=True)
-joblib.dump(value=model, filename='outputs/diabetes_model.pkl')
+# plot ROC curve
+fpr, tpr, thresholds = roc_curve(y_test, y_scores[:,1])
+fig = plt.figure(figsize=(6, 4))
+# Plot the diagonal 50% line
+plt.plot([0, 1], [0, 1], 'k--')
+# Plot the FPR and TPR achieved by our model
+plt.plot(fpr, tpr)
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve')
+run.log_image(name = "ROC", plot = fig)
 
-# Complete the run
+#-----SAVE_MODEL---------------------------------------------------------------#
+# Save the trained model in the outputs folder
+print("Saving model...")
+os.makedirs('outputs', exist_ok=True)
+model_file = os.path.join('outputs', 'diabetes_model.pkl')
+joblib.dump(value=model, filename=model_file)
+
+# Register the model
+print('Registering model...')
+Model.register(workspace=run.experiment.workspace,
+               model_path = model_file,
+               model_name = 'diabetes_model',
+               tags={'Training context':'Pipeline'},
+               properties={'AUC': float(auc), 'Accuracy': float(acc)})
+
+
 run.complete()
