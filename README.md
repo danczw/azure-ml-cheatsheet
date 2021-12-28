@@ -6,8 +6,8 @@ Azure Machine Learning is a cloud-based service for creating and managing machin
 
 
 Scripts are in order of implementation with ´./04_experiment_setup.py´ aggregating all previous shown functions, methods and setups - *Overview*:
-1. datastores: upload and registration of training data [./datastores.py](./datastores.py)
-2. environment: setup of experiment environment and dependencies [./envs.py](./envs.py) 
+1. datastores: upload and registration of training data [./01_datastores.py](./01_datastores.py)
+2. environment: setup of experiment environment and dependencies [./02_envs.py](./02_envs.py) 
 3. compute target: creating compute target for model training ([./03_compute.py](./03_compute.py))
 4. setup: running experiments training models from [./experiments](./experiments) 
 
