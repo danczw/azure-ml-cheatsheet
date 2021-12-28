@@ -3,6 +3,7 @@ from azureml.core import Environment, Model, Workspace
 from azureml.core.model import InferenceConfig
 from azureml.core.webservice import AciWebservice
 import json
+import requests
 
 #-----WORKSPACE----------------------------------------------------------------#
 # load workspace from config JSON file
@@ -91,12 +92,32 @@ input_json = json.dumps({'data': x_new})
 # Call the web service, passing the input data
 predictions = service.run(input_data = input_json)
 
-# Get the predicted classes.
+# Get the predicted classes
 predicted_classes = json.loads(predictions)
 for i in range(len(x_new)):
     print ('Patient {}'.format(x_new[i]), predicted_classes[i] )
 
 #-----CONSUME_SERVICE_II-------------------------------------------------------#
 '''
-* In production, a model is likely to be consumed by business applications that do not use the Azure Machine Learning SDK, but simply make HTTP requests to the web service
+* Model in production is likely to be consumed by business applications that do not use the Azure Machine Learning SDK
+* Simply make HTTP requests to the web service
 '''
+endpoint = service.scoring_uri                                  # Determine the URL
+print(endpoint)
+
+x_new = [[2,180,74,24,21,23.9091702,1.488172308,22],
+         [0,148,58,11,179,39.19207553,0.160829008,45]]
+
+# Convert the array to a serializable list in a JSON document
+input_json = json.dumps({"data": x_new})
+
+# Set the content type
+headers = { 'Content-Type':'application/json' }
+
+# Call the web service, passing the input data
+predictions = requests.post(endpoint, input_json, headers = headers)
+
+# Get the predicted classes
+predicted_classes = json.loads(predictions.json())
+for i in range(len(x_new)):
+    print ("Patient {}".format(x_new[i]), predicted_classes[i] )
