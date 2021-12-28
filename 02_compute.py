@@ -5,16 +5,16 @@ from azureml.core.compute_target import ComputeTargetException
 #-----WORKSPACE----------------------------------------------------------------#
 # load workspace from config JSON file
 ws = Workspace.from_config()
-print(ws.name, "loaded")
+print(ws.name, 'loaded')
 
 #-----COMPUTE_CLUSTER----------------------------------------------------------#
-"""
+'''
 Azure Machine Learning supports a range of compute targets
 * can be define in your workpace and use to run experiments
 * paying for the resources only when using them
 * Cluster names must be globally unique names between 2 to 16 characters in length
 * Valid characters are letters, digits, and the - character
-"""
+'''
 cluster_name = "ml-sdk-cc"
 
 # Create new compute cluster if not already existing

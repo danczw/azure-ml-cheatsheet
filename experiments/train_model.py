@@ -15,12 +15,12 @@ from sklearn.metrics import roc_curve
 run = Run.get_context() 	                                        # method to retrieve the experiment run context when the script is run
 
 #-----EXPERIMENT_PARAMETER-----------------------------------------------------#
-"""
+'''
 * increase the flexibility of your training experiment by adding parameters to your script
 * enabling you to repeat the same training experiment with different settings
-"""
+'''
 parser = argparse.ArgumentParser()
-parser.add_argument("--training-data", type=str, dest='training_data', help='training data')
+parser.add_argument('--training-data', type=str, dest='training_data', help='training data')
 parser.add_argument('--regularization', type=float, dest='reg_rate', default=0.01, help='regularization rate')
 args = parser.parse_args()
 
@@ -32,7 +32,7 @@ reg = args.reg_rate
 
 #-----DATA---------------------------------------------------------------------#
 # load the prepared data file in the training folder
-print("Loading Data...")
+print('Loading Data...')
 file_path = os.path.join(training_data,'data.csv')
 diabetes = pd.read_csv(file_path)
 
@@ -46,7 +46,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random
 # Train a logistic regression model
 print('Training a logistic regression model with regularization rate of', reg)
 run.log('Regularization Rate',  float(reg))
-model = LogisticRegression(C=1/reg, solver="liblinear").fit(X_train, y_train)
+model = LogisticRegression(C=1/reg, solver='liblinear').fit(X_train, y_train)
 
 #-----METRICS------------------------------------------------------------------#
 # calculate accuracy
@@ -71,22 +71,27 @@ plt.plot(fpr, tpr)
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.title('ROC Curve')
-run.log_image(name = "ROC", plot = fig)
+run.log_image(name = 'ROC', plot = fig)
 
 #-----SAVE_MODEL---------------------------------------------------------------#
 # Save the trained model in the outputs folder
-print("Saving model...")
+print('Saving model...')
 os.makedirs('outputs', exist_ok=True)
 model_file = os.path.join('outputs', 'diabetes_model.pkl')
 joblib.dump(value=model, filename=model_file)
 
 # Register the model
 print('Registering model...')
-Model.register(workspace=run.experiment.workspace,
-               model_path = model_file,
-               model_name = 'diabetes_model',
-               tags={'Training context':'Pipeline'},
-               properties={'AUC': float(auc), 'Accuracy': float(acc)})
+Model.register(
+    workspace=run.experiment.workspace,
+    model_path = model_file,
+    model_name = 'diabetes_model',
+    tags={'Training context':'Pipeline'},
+    properties={
+        'AUC': float(auc),
+        'Accuracy': float(acc)
+    }
+)
 
 
 run.complete()

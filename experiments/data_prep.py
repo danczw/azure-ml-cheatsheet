@@ -9,13 +9,13 @@ from sklearn.preprocessing import MinMaxScaler
 run = Run.get_context() 	                                        # method to retrieve the experiment run context when the script is run
 
 #-----EXPERIMENT_PARAMETER-----------------------------------------------------#
-"""
+'''
 * increase the flexibility of your training experiment by adding parameters to your script
 * enabling you to repeat the same training experiment with different settings
-"""
+'''
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "--input-data",
+    '--input-data',
     type=str,
     dest='raw_dataset_id',
     help='raw dataset'
@@ -34,13 +34,13 @@ save_folder = args.prepped_data
 
 #-----DATA---------------------------------------------------------------------#
 # load the data (passed as an input dataset)
-print("Loading Data...")
+print('Loading Data...')
 diabetes = run.input_datasets['raw_data'].to_pandas_dataframe()
 
 # Using file dataset instead of tabular data:
     # data_path = run.input_datasets['training_files'] # Get the training data path from the input using a file dataset
     # (You could also just use args.dataset_folder if you don't want to rely on a hard-coded friendly name)
-    # all_files = glob.glob(data_path + "/*.csv") # Read the files
+    # all_files = glob.glob(data_path + '/*.csv') # Read the files
     # diabetes = pd.concat((pd.read_csv(f) for f in all_files), sort=False)
 
 # Log raw row count
@@ -62,7 +62,7 @@ run.log('processed_rows', row_count)
 
 #-----SAVE---------------------------------------------------------------------#
 # Save the prepped data
-print("Saving Data...")
+print('Saving Data...')
 os.makedirs(save_folder, exist_ok=True)
 save_path = os.path.join(save_folder,'data.csv')
 diabetes.to_csv(save_path, index=False, header=True)
