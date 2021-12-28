@@ -78,12 +78,12 @@ run.wait_for_completion()                                           # Asynchrono
 #         print('-', key, metrics.get(key))
 
 # Get logged metrics
-metrics = run.get_metrics()
-for key in metrics.keys():
-        print(key, metrics.get(key))
-print('\n')
-for file in run.get_file_names():
-    print(file)
+# metrics = run.get_metrics()
+# for key in metrics.keys():
+#         print(key, metrics.get(key))
+# print('\n')
+# for file in run.get_file_names():
+#     print(file)
 
 """
 troubleshoot the experiment run
