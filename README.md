@@ -16,7 +16,7 @@ The pipeline itself includes two steps:
 * Data preprocessing [./experiments/data_prep.py](./experiments/data_prep.py) inkl. normalization
 * Model training [./experiments/train_model.py](./experiments/train_model.py) for classification using logistic regression
 
-Finalized Azure Machine Learning will look like:
+Finalized Azure Machine Learning pipeline will look like:
 ![Azure ML Pipeline with two steps](./assets/pipeline_run.png "Azure ML Pipeline")
 
 ## Setup

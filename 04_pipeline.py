@@ -10,15 +10,25 @@ import requests
 from azureml.widgets import RunDetails
 import os
 
+'''
+Experiment
+* Eexperiment is a named process, usually the running of a single script or a pipeline
+    * Can generate metrics and outputs and be tracked in the Azure ML workspace
+* Experiment can be run multiple times, with different data, code, or settings
+* Azure ML tracks each run, enabling to view run history and compare results for each run
+
+* This is the entry script for the pipeline, combining:
+    * Uploaded dataset located in created datastore
+    * Provisioned compute target
+    * Defined Python environment
+* Adds a data preprocessing and a model training stepwise in a pipeline for more flexibility
+* Alternatively, for fast prototyping single script experiments can be run (see SCRIPT_SETUP)
+'''
+
 #-----WORKSPACE----------------------------------------------------------------#
-# load workspace from config JSON file
+# Load workspace from config JSON file
 ws = Workspace.from_config()
 print(ws.name, 'loaded')
-
-# view compute resources in workspace.compute_targets
-# for compute_name in ws.compute_targets:
-#     compute = ws.compute_targets[compute_name]
-#     print('\t', compute.name, ':', compute.type)
 
 #-----DATASET------------------------------------------------------------------#
 # Get the training dataset from registered datasets (see ./01_datastores.py)
@@ -39,11 +49,11 @@ registered_env = Environment.get(ws, 'experiment_env')
 '''
 Single step experiments
 * For running single step experiments, no pipeline need to be deployed
-* Simply create a script run config - similar to simple pipeline step (see next section)
-    * identifies the Python script file to be run in the experiment
-    * determines the compute target and Python environment
-    * creates a DockerConfiguration for the script run
-    * setting its use_docker attribute to True in order to host the script's environment in a Docker container
+* Simply create a script run config - similar to a single pipeline step
+    * Identifies the Python script file to be run in the experiment
+    * Determines the compute target and Python environment
+    * Creates a DockerConfiguration for the script run
+    * Setting its use_docker attribute to True to host the script's environment in a Docker container
 '''
 # script_config = ScriptRunConfig(
 #     source_directory=experiment_folder,
@@ -57,9 +67,9 @@ Single step experiments
 #     docker_runtime_config=DockerConfiguration(use_docker=True)          # Use docker to host environment
 # )
 '''
-when using file dataset:
-* define path from which the script can read the files
-* either use as_download or as_mount method
+Note: when using file dataset:
+* Define path from which the script can read the files
+* Either use as_download or as_mount method
     * as_download causes files in the file dataset to be downloaded to a temporary location on the compute where the script is being run
     * as_mount creates a mount point from which the files can be streamed directly from the datastore
 '''
@@ -67,17 +77,24 @@ when using file dataset:
 #-----PIPELINE_SETUP-----------------------------------------------------------#
 '''
 Azure Machine Learning Pipelines
-* consist of one or more steps
-* can be Python scripts, or specialized steps like a data transfer step copying data from one location to another
+* Consist of one or more steps
+* Can be Python scripts, or specialized steps like a data transfer step copying data from one location to another
 * Each step can run in its own compute context
 
 This repo defines a simple pipeline containing two Python script steps:
-* one to pre-process some training data
-* another to use the pre-processed data to train and register a model
-* reuse is enabled:
-    * usually first step to should run every time in case the data has changed
-    * subsequent steps should be triggered only if the output from step one changes
-    * for convenience reuse enables to only run any steps with changed parameter
+* First step to pre-process training data
+* Second step to use the pre-processed data to train a model
+* Reuse is enabled:
+    * Usually first step should run every time if the data has changed
+    * Subsequent steps are triggered only if the output from step one changes
+    * For convenience reuse enables to only run any steps with changed parameter
+
+* Common kinds of step in an Azure Machine Learning pipeline:
+    * PythonScriptStep: Runs specified Python script
+    * DataTransferStep: Uses Azure Data Factory to copy data between data stores
+    * DatabricksStep:   Runs notebook, script, or compiled JAR on a databricks cluster
+    * AdlaStep:         Runs U-SQL job in Azure Data Lake Analytics
+    * ParallelRunStep:  Runs Python script as a distributed task on multiple compute nodes.
 '''
 pipeline_run_config = RunConfiguration()                        # Create a new runconfig object for the pipeline
 pipeline_run_config.target = cluster_name                       # Use the compute created  
@@ -85,6 +102,9 @@ pipeline_run_config.environment = registered_env                # Assign the env
 
 print ('Run configuration created.')
 
+'''
+Review ./experiments/* which includes both example pipeline steps
+'''
 experiment_folder = './experiments' # Pipeline steps folder
 
 # Step 1, Run the data prep script
@@ -123,8 +143,9 @@ pipeline = Pipeline(workspace=ws, steps=pipeline_steps)
 print('Pipeline is built.')
 
 #-----EXPERIMENT---------------------------------------------------------------#
+# Create an Azure ML experiment in workspace
 experiment_name = 'ml-sdk'
-experiment = Experiment(workspace=ws, name=experiment_name)            # Create an Azure ML experiment in your workspace
+experiment = Experiment(workspace=ws, name=experiment_name)
 print('Pipeline submitted for execution.')
 
 #-----RUN----------------------------------------------------------------------#
@@ -158,9 +179,9 @@ pipeline_run.wait_for_completion(show_output=True)
 #     print(file)
 
 '''
-troubleshoot the experiment run
-* use get_details method to retrieve basic details about the run
-* or use get_details_with_logs method to retrieve run details as well as contents of log files
+Troubleshoot the experiment run
+* Use get_details method to retrieve basic details about the run
+* Use get_details_with_logs method to retrieve run details as well as contents of log files
 '''
 run_details = pipeline_run.get_details_with_logs()
 # print(f'Run details: \n\t{run_details}')
@@ -174,9 +195,9 @@ for root, directories, filenames in os.walk(log_folder):
         print (os.path.join(root,filename))
 
 '''
-download the files produced by the experiment e.g. for logged visualizations
-* either individually by using the download_file method
-* or by using the download_files method to retrieve multiple files
+Download the files produced by the experiment e.g. for logged visualizations
+* Either individually by using the download_file method
+* Or by using the download_files method to retrieve multiple files
 '''
 # Download 
 download_folder = 'downloaded-files'
@@ -189,9 +210,10 @@ for root, directories, filenames in os.walk(download_folder):
 
 #-----REGISTER_MODEL-----------------------------------------------------------#
 '''
-* outputs of the experiment included the trained model file
-* register model in your Azure Machine Learning workspace
-* allowing to track model versions and retrieve them later
+Register run mchine learning model
+* Outputs of the experiment also include the trained model file
+* Register model in your Azure Machine Learning workspace
+* Allowing to track model versions and retrieve them later
 '''
 pipeline_run.register_model(
     model_path='outputs/diabetes_model.pkl',
@@ -224,10 +246,11 @@ rest_endpoint = published_pipeline.endpoint
 print(rest_endpoint)
 
 '''
-* to use the endpoint, client applications need to make a REST call over HTTP
-* this request must be authenticated --> authorization header is required
-* real application would require a service principal with which to be authenticated
-* for now, we'll use the authorization header from the current connection to Azure workspace
+Endpoint for model training calls
+* To use an endpoint, client applications need to make a REST call over HTTP
+* Request must be authenticated --> authorization header is required
+* Real application would require a service principal with which to be authenticated
+* For now, use the authorization header from the current connection to Azure workspace
 '''
 # Define authentication header
 interactive_auth = InteractiveLoginAuthentication()
