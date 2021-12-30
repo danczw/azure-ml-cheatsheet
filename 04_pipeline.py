@@ -246,7 +246,7 @@ rest_endpoint = published_pipeline.endpoint
 print(rest_endpoint)
 
 '''
-Endpoint for model training calls
+Endpoint for model training callsgi
 * To use an endpoint, client applications need to make a REST call over HTTP
 * Request must be authenticated --> authorization header is required
 * Real application would require a service principal with which to be authenticated
