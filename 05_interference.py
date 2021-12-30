@@ -6,7 +6,7 @@ import json
 import requests
 
 #-----WORKSPACE----------------------------------------------------------------#
-# load workspace from config JSON file
+# Load workspace from config JSON file
 ws = Workspace.from_config()
 print(ws.name, 'loaded')
 
@@ -32,11 +32,10 @@ Deyploy web service
 * Web service will be hosted in a container
 * Container will need to install any required Python dependencies when it gets initialized
 * In this repo, interference code requires scikit-learn and some Azure Machine Learning specific packages
-
-Deplyo steps:
-1. Create an environment that included these
-2. Add environment to an inference configuration along with the scoring script
-3. Define a deployment configuration for the container in which the environment and script will be hosted
+* Deploy steps:
+    1. Create an environment that includes required dependencies
+    2. Add environment to an inference configuration along with the scoring script
+    3. Define a deployment configuration for the container in which the environment and script will be hosted
 '''
 service_env = Environment(name='service-env')                   # Initialize env
 python_packages = [                                             # Define dependencies
@@ -48,7 +47,7 @@ python_packages = [                                             # Define depende
 for package in python_packages:                                 # Add dependencies to env
     service_env.python.conda_dependencies.add_pip_package(package)
 
-# Create interference config
+# Create interference config - review ./service/web_service.py for scroing script setup
 inference_config = InferenceConfig(
     source_directory='./service',                               # Web service entry script location
     entry_script='web_service.py',                              # Web service entry script name
@@ -77,7 +76,8 @@ for webservice_name in ws.webservices:
 
 #-----CONSUME_SERVICE_I--------------------------------------------------------#
 '''
-* Azure Machine Learning SDK to:
+Consume deployed service
+* via Azure Machine Learning SDK to:
     * Connect to the containerized web service
     * Generate predictions from diabetes classification model
 '''
@@ -99,8 +99,11 @@ for i in range(len(x_new)):
 
 #-----CONSUME_SERVICE_II-------------------------------------------------------#
 '''
-* Model in production is likely to be consumed by business applications that do not use the Azure Machine Learning SDK
-* Simply make HTTP requests to the web service
+Consume deployed service
+* via endpoint and HTTP request
+    * Model in production is likely to be consumed by business applications 
+    * --> usually do not use the Azure Machine Learning SDK
+    * Instead, make HTTP requests to the web service
 '''
 endpoint = service.scoring_uri                                  # Determine the URL
 print(endpoint)
@@ -121,3 +124,8 @@ predictions = requests.post(endpoint, input_json, headers = headers)
 predicted_classes = json.loads(predictions.json())
 for i in range(len(x_new)):
     print ("Patient {}".format(x_new[i]), predicted_classes[i] )
+
+#-----DELETE_SERVICE-------------------------------------------------------#
+# Delete the service when no longer needed
+# service.delete()
+# print ('Service deleted.')
