@@ -96,8 +96,9 @@ This repo defines a simple pipeline containing two Python script steps:
     * AdlaStep:         Runs U-SQL job in Azure Data Lake Analytics
     * ParallelRunStep:  Runs Python script as a distributed task on multiple compute nodes.
 '''
+# Define pipeline configuration
 pipeline_run_config = RunConfiguration()                        # Create a new runconfig object for the pipeline
-pipeline_run_config.target = cluster_name                       # Use the compute created  
+pipeline_run_config.target = cluster_name                       # Use the compute registered
 pipeline_run_config.environment = registered_env                # Assign the environment to the run configuration
 
 print ('Run configuration created.')
@@ -208,7 +209,7 @@ for root, directories, filenames in os.walk(download_folder):
 
 #-----REGISTER_MODEL-----------------------------------------------------------#
 '''
-Register run mchine learning model
+Register run machine learning model
 * Outputs of the experiment also include the trained model file
 * Register model in your Azure Machine Learning workspace
 * Allowing to track model versions and retrieve them later
@@ -235,6 +236,13 @@ pipeline_run.register_model(
 #     print('\n')
 
 #-----ENDPOINT-----------------------------------------------------------------#
+'''
+Endpoint for model training calls
+* To use an endpoint, client applications need to make a REST call over HTTP
+* Request must be authenticated --> authorization header is required
+* Real application would require a service principal with which to be authenticated
+* For now, use the authorization header from the current connection to Azure workspace
+'''
 # Publish the pipeline from the run as a REST service
 published_pipeline = pipeline_run.publish_pipeline(
     name='diabetes-training-pipeline', description='Trains diabetes model', version='1.0')
@@ -243,13 +251,6 @@ published_pipeline = pipeline_run.publish_pipeline(
 rest_endpoint = published_pipeline.endpoint
 print(rest_endpoint)
 
-'''
-Endpoint for model training callsgi
-* To use an endpoint, client applications need to make a REST call over HTTP
-* Request must be authenticated --> authorization header is required
-* Real application would require a service principal with which to be authenticated
-* For now, use the authorization header from the current connection to Azure workspace
-'''
 # Define authentication header
 interactive_auth = InteractiveLoginAuthentication()
 auth_header = interactive_auth.get_authentication_header()

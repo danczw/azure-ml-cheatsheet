@@ -90,10 +90,22 @@ print('Steps defined')
 # Construct the pipeline
 pipeline = Pipeline(workspace=ws, steps=[parallelrun_step])
 
-#-----EXPERIMENT_&_RUN---------------------------------------------------------#
-# Create an Azure ML experiment in workspace and submit a run
+#-----EXPERIMENT---------------------------------------------------------------#
+# Create an Azure ML experiment in workspace
 experiment_name = 'mslearn-diabetes-batch'
-pipeline_run = Experiment(ws, 'mslearn-diabetes-batch').submit(pipeline)
+experiment = Experiment(ws, 'mslearn-diabetes-batch').submit(pipeline)
+print('Pipeline submitted for execution.')
+
+#-----RUN----------------------------------------------------------------------#
+'''
+Run object is a reference to an individual run of an experiment in Azure Machine Learning
+'''
+pipeline_run = experiment.submit(pipeline, regenerate_outputs=True)
+
+# In Jupyter Notebooks, use RunDetails widget to see a visualization of the run details
+# RunDetails(pipeline_run).show()                                     # Show details
+
+# run.wait_for_completion()                                           # Asynchronous - does not work with local execution
 pipeline_run.wait_for_completion(show_output=True)
 
 #-----LOGS---------------------------------------------------------------------#

@@ -29,7 +29,7 @@ parser.add_argument(
     default='prepped_data',
     help='Folder for results'
 )
-args = parser.parse_args()
+args = parser.parse_args()                                      # Add arguments to args collection
 save_folder = args.prepped_data
 
 #-----DATA---------------------------------------------------------------------#

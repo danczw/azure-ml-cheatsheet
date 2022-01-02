@@ -22,7 +22,7 @@ run = Run.get_context() 	                                        # method to ret
 parser = argparse.ArgumentParser()
 parser.add_argument('--training-data', type=str, dest='training_data', help='training data')
 parser.add_argument('--regularization', type=float, dest='reg_rate', default=0.01, help='regularization rate')
-args = parser.parse_args()
+args = parser.parse_args()                                          # Add arguments to args collection
 
 # Set training data from prepared data
 training_data = args.training_data
