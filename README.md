@@ -13,10 +13,10 @@ Scripts are in order of implementation:
 2. Compute: creating compute target for model training - [02_compute.py](./02_compute.py)
 3. Environment: setup of experiment environment and dependencies - [03_envs.py](./03_envs.py)
 4. Pipeline: running experiments divided into pipeline steps - [04_pipeline.py](./04_pipeline.py)
-5. Inference: set up web service and consume for inference [05_inference.py](./05_inference.py)
-6. Batch pipeline and inference: setup pipeline and inference for batch processing [06_batch_pipeline_inference.py](./06_batch_pipeline_inference.py)
-7. Hyperparamenter: tune and evaluate hyperparameter for model performance [07_hyperparameter.py](./07_hyperparameter.py)
-8. Automated ML: run automated Machine Learning experiments for various model testing [08_automatedML.py](./08_automatedML.py)
+5. Inference: set up web service and consume for inference - [05_inference.py](./05_inference.py)
+6. Batch pipeline and inference: setup pipeline and inference for batch processing - [06_batch_pipeline_inference.py](./06_batch_pipeline_inference.py)
+7. Hyperparamenter: tune and evaluate hyperparameter for model performance - [07_hyperparameter.py](./07_hyperparameter.py)
+8. Automated ML: run automated Machine Learning experiments for various model testing - [08_automatedML.py](./08_automatedML.py)
 
 ------------------------------------------------
 
@@ -53,17 +53,17 @@ Few notes on the SDK libraries:
 ------------------------------------------------
 
 ## TODO
-- [x] start with Workspace definiton
-- [x] add 'datastore' registration
-- [x] add 'compute target' creation
-- [x] add 'environment' definition
-- [x] add 'pipeline' configuration
-- [x] add 'inference' functionality
-- [x] add batch processing
-- [x] add 'hyperparameter' tuning 
-- [x] add 'automated ml' functionality
-- [] review and extend azureml function parameter comments
-- [] add part 'differential privacy'
-- [] add part 'interpret models'
-- [] add part 'detect unfairness'
-- [] add part 'data drift'
+[x] start with Workspace definiton
+[x] add 'datastore' registration
+[x] add 'compute target' creation
+[x] add 'environment' definition
+[x] add 'pipeline' configuration
+[x] add 'inference' functionality
+[x] add batch processing
+[x] add 'hyperparameter' tuning 
+[x] add 'automated ml' functionality
+[] review and extend azureml function parameter comments
+[] add part 'differential privacy'
+[] add part 'interpret models'
+[] add part 'detect unfairness'
+[] add part 'data drift'
