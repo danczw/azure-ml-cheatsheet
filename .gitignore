@@ -1,4 +1,5 @@
 .vscode/
 downloaded-logs/
 downloaded-files/
+batch-data/
 config.json

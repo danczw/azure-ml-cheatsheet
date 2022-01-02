@@ -103,7 +103,7 @@ pipeline_run_config.environment = registered_env                # Assign the env
 print ('Run configuration created.')
 
 '''
-Review ./experiments/* which includes both example pipeline steps
+Review ./experiments/* which includes example pipeline steps
 '''
 experiment_folder = './experiments' # Pipeline steps folder
 

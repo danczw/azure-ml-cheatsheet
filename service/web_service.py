@@ -5,7 +5,7 @@ import os
 
 #-----WEB_SERVICE--------------------------------------------------------------#
 '''
-Interference web service
+Inference web service
 * Web service to deploy the model
 * Service steps:
     1. Load the input data
