@@ -1,5 +1,7 @@
 # Import libraries
 from azureml.core import Dataset, Datastore, Workspace
+import os
+import pandas as pd
 
 #-----WORKSPACE----------------------------------------------------------------#
 '''
@@ -33,28 +35,27 @@ Datastores
 * Every workspace has a default datastore
     * Initially Azure storage blob container created with the workspace
 '''
-# Get the default datastore
-default_ds = ws.get_default_datastore()
 
 # Enumerate all datastores, indicating which is the default
 for ds_name in ws.datastores:
-    print(ds_name, '- Default =', ds_name == default_ds.name)
+    print(ds_name, '- Default =', ds_name == ws.get_default_datastore().name)
 
-# Register a new datastore
-blob_ds = Datastore.register_azure_blob_container(
-    workspace=ws, 
-    datastore_name='blob_data', 
-    container_name='data_container',
-    account_name='YOUR-ACCOUNT-NAME',
-    account_key='YOUR-AACOUNT-KEY'
-)
+# TODO: add .env and refactor code to create new datastore
+# # Register a new datastore
+# blob_ds = Datastore.register_azure_blob_container(
+#     workspace=ws, 
+#     datastore_name='blob_data', 
+#     container_name='data_container',
+#     account_name='YOUR-ACCOUNT-NAME',
+#     account_key='YOUR-AACOUNT-KEY'
+# )
 
 # Get reference to new datastore
-blob_store = Datastore.get(ws, datastore_name='blob_data')
+# blob_store = Datastore.get(ws, datastore_name='blob_data')
 
 # Set default store
-ws.set_default_datastore('blob_data')
-default_ds = ws.get_default_datastore() # reassign new default datastore variable
+# ws.set_default_datastore('blob_data')
+default_ds = ws.get_default_datastore() # assign new default datastore variable
 
 #-----UPLOAD_DATA--------------------------------------------------------------#
 # Upload sample data to newly created blob storage
@@ -82,6 +83,34 @@ print(f'Files in datastore: {default_ds.name}')
 for file_path in file_data_set.to_path():
     print(f'\t{file_path}')
 
+#-----BATCH_DATA---------------------------------------------------------------#
+'''
+Creating batch data
+* For batch inference purposes, batch data needs to be created
+'''
+# Load the diabetes data
+diabetes = pd.read_csv('data/sample_diabetes.csv')
+# Get a 100-item sample of the feature columns (not the diabetic label)
+sample = diabetes[['Pregnancies','PlasmaGlucose','DiastolicBloodPressure','TricepsThickness','SerumInsulin','BMI','DiabetesPedigree','Age']].sample(n=100).values
+
+# Create a folder
+batch_folder = './batch-data'
+os.makedirs(batch_folder, exist_ok=True)
+print("Folder created!")
+
+# Save each sample as a separate file
+print("Saving files...")
+for i in range(100):
+    fname = str(i+1) + '.csv'
+    sample[i].tofile(os.path.join(batch_folder, fname), sep=",")
+print("files saved!")
+
+# Upload the files to the default datastore
+print("Uploading files to datastore...")
+default_ds.upload(src_dir="batch-data", target_path="batch-data", overwrite=True, show_progress=True)
+
+print("Data uploaded!")
+
 #-----REGISTER_DATASET---------------------------------------------------------#
 '''
 Register dataset for easy accessibility to any experiment run in the workspace
@@ -105,6 +134,18 @@ try:
         name='diabetes file dataset',
         description='diabetes files',
         tags = {'format':'CSV'},
+        create_new_version=True
+    )
+except Exception as ex:
+    print(ex)
+
+# Register batch dataset
+batch_data_set = Dataset.File.from_files(path=(default_ds, 'batch-data/'), validate=False)
+try:
+    batch_data_set = batch_data_set.register(
+        workspace=ws, 
+        name='batch-data',
+        description='batch data',
         create_new_version=True
     )
 except Exception as ex:
