@@ -53,17 +53,17 @@ Few notes on the SDK libraries:
 ------------------------------------------------
 
 ## TODO
-[x] start with Workspace definiton
-[x] add 'datastore' registration
-[x] add 'compute target' creation
-[x] add 'environment' definition
-[x] add 'pipeline' configuration
-[x] add 'inference' functionality
-[x] add batch processing
-[x] add 'hyperparameter' tuning 
-[x] add 'automated ml' functionality
-[] review and extend azureml function parameter comments
-[] add part 'differential privacy'
-[] add part 'interpret models'
-[] add part 'detect unfairness'
-[] add part 'data drift'
+- [x] start with Workspace definiton
+- [x] add 'datastore' registration
+- [x] add 'compute target' creation
+- [x] add 'environment' definition
+- [x] add 'pipeline' configuration
+- [x] add 'inference' functionality
+- [x] add batch processing
+- [x] add 'hyperparameter' tuning 
+- [x] add 'automated ml' functionality
+- [] review and extend azureml function parameter comments
+- [] add part 'differential privacy'
+- [] add part 'interpret models'
+- [] add part 'detect unfairness'
+- [] add part 'data drift'
