@@ -10,7 +10,7 @@ Scripts are in order of implementation:
 2. compute: creating compute target for model training - [./02_compute.py](./02_compute.py)
 3. environment: setup of experiment environment and dependencies - [./03_envs.py](./03_envs.py)
 4. pipeline: running experiments divided into pipeline steps - [./04_pipeline.py](./04_pipeline.py)
-5. Interference: setup web service and consume for interference [./05_interference.py](./05_interference.py)
+5. Inference: setup web service and consume for inference [./05_inference.py](./05_inference.py)
 
 The pipeline itself includes two steps:
 * Data preprocessing [./experiments/data_prep.py](./experiments/data_prep.py) inkl. normalization

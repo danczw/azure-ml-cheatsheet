@@ -31,7 +31,7 @@ print(model.name, 'version', model.version)
 Deyploy web service
 * Web service will be hosted in a container
 * Container will need to install any required Python dependencies when it gets initialized
-* In this repo, interference code requires scikit-learn and some Azure Machine Learning specific packages
+* In this repo, inference code requires scikit-learn and some Azure Machine Learning specific packages
 * Deploy steps:
     1. Create an environment that includes required dependencies
     2. Add environment to an inference configuration along with the scoring script
@@ -47,11 +47,11 @@ python_packages = [                                             # Define depende
 for package in python_packages:                                 # Add dependencies to env
     service_env.python.conda_dependencies.add_pip_package(package)
 
-# Create interference config - review ./service/web_service.py for scroing script setup
+# Create inference config - review ./service/web_service.py for scroing script setup
 inference_config = InferenceConfig(
     source_directory='./service',                               # Web service entry script location
     entry_script='web_service.py',                              # Web service entry script name
-    environment=service_env                                     # Interference env
+    environment=service_env                                     # Inference env
 )
 
 # Configure the web service container
