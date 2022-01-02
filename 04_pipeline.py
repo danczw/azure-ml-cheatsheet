@@ -151,13 +151,11 @@ print('Pipeline submitted for execution.')
 '''
 Run object is a reference to an individual run of an experiment in Azure Machine Learning
 '''
-# run = experiment.submit(config=script_config)                       # Run single script experiment
 pipeline_run = experiment.submit(pipeline, regenerate_outputs=True)
 
 # In Jupyter Notebooks, use RunDetails widget to see a visualization of the run details
-# RunDetails(pipeline_run).show()                                     # Show details
+# RunDetails(pipeline_run).show()
 
-# run.wait_for_completion()                                           # Asynchronous - does not work with local execution
 pipeline_run.wait_for_completion(show_output=True)
 
 #-----LOGS---------------------------------------------------------------------#

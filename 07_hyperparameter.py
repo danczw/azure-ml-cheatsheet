@@ -21,6 +21,13 @@ cluster_name = 'ml-sdk-cc'
 registered_env = Environment.get(ws, 'experiment_env')
 
 #-----SCRIPT_SETUP-------------------------------------------------------------#
+'''
+Hyperparameter tuning
+* hyperparameter: parameter values that influence training, but can't be determined from the training data itself
+* e.g.: for logistic regression model tune regularization rate hyperparameter to counteract bias in the model
+* choice of hyperparameter values can significantly affect the performance of a trained model, or the time taken to train it
+* often try of multiple combinations to find the optimal solution is needed
+'''
 # Review ./experiments/* which includes example pipeline steps
 experiment_folder = './experiments' # Pipeline steps folder
 
@@ -67,9 +74,8 @@ Run object is a reference to an individual run of an experiment in Azure Machine
 run = experiment.submit(config=hyperdrive)
 
 # In Jupyter Notebooks, use RunDetails widget to see a visualization of the run details
-# RunDetails(pipeline_run).show()                                     # Show details
+# RunDetails(pipeline_run).show()
 
-# run.wait_for_completion()                                           # Asynchronous - does not work with local execution
 run.wait_for_completion(show_output=True)
 
 #-----PERFORMANCE--------------------------------------------------------------#
