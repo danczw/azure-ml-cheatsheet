@@ -62,7 +62,7 @@ Azure Compute Targets:
 |------------------------------------------------------------------------------|
 | Azure Machine Learning | Batch       | Run batch scoring on serverless       |
 | Compute Clusters	     | inference   | compute. Supports normal and          |
-|                        |             | low-priority VMs.
+|                        |             | low-priority VMs.                     |
 |------------------------------------------------------------------------------|
 | Azure IoT Edge         | IoT         | Deploy & serve ML models on           |
 | (Preview)              | module      | IoT devices.                          |
