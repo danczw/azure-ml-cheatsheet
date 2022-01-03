@@ -38,8 +38,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random
 
 #-----HYPERPARAMETER-----------------------------------------------------------#
 # Log Hyperparameter values
-run.log('learning_rate',  np.float(args.learning_rate))
-run.log('n_estimators',  np.int(args.n_estimators))
+run.log('learning_rate',  float(args.learning_rate))
+run.log('n_estimators',  int(args.n_estimators))
 
 #-----METRICS------------------------------------------------------------------#
 # Train a Gradient Boosting classification model with the specified hyperparameters
@@ -51,13 +51,14 @@ model = GradientBoostingClassifier(learning_rate=args.learning_rate,
 y_hat = model.predict(X_test)
 acc = np.average(y_hat == y_test)
 print('Accuracy:', acc)
-run.log('Accuracy', np.float(acc))
+run.log('Accuracy', float(acc))
 
 # calculate AUC
 y_scores = model.predict_proba(X_test)
 auc = roc_auc_score(y_test,y_scores[:,1])
 print('AUC: ' + str(auc))
-run.log('AUC', np.float(auc))
+# log the primary metric to the run using the same name as specified in the hyperdrive config
+run.log('AUC', float(auc))
 
 #-----SAVE_MODEL---------------------------------------------------------------#
 # Save the model in the run outputs

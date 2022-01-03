@@ -60,8 +60,8 @@ Single step experiments
 #     script='train_model.py',
 #     arguments = [
 #         '--regularization', 0.1,                        
-#         '--input-data', diabetes_ds.as_named_input('training_data')],   # Reference to tabular dataset
-#         # '--input-data', diabetes_ds.as_named_input('training_files').as_download()], # Reference to file dataset location
+#         '--input-data', diabetes_ds.as_named_input('training_data')],                     # Reference to tabular dataset
+#         # '--input-data', diabetes_ds.as_named_input('training_files').as_download()],    # Reference to file dataset location
 #     environment=registered_env,
 #     compute_target=cluster_name,
 #     docker_runtime_config=DockerConfiguration(use_docker=True)          # Use docker to host environment
@@ -172,6 +172,7 @@ pipeline_run.wait_for_completion(show_output=True)
 # for key in metrics.keys():
 #         print(key, metrics.get(key))
 # print('\n')
+# Get logged files
 # for file in run.get_file_names():
 #     print(file)
 
@@ -267,6 +268,7 @@ run_id = response.json()['Id']
 published_pipeline_run = PipelineRun(ws.experiments[experiment_name], run_id)
 published_pipeline_run.wait_for_completion(show_output=True)
 
+#-----SCHEDULE-----------------------------------------------------------------#
 # Schedule pipeline e.g. for a weekly run
 recurrence = ScheduleRecurrence(                                # Submit the Pipeline every Monday at 00:00 UTC
     frequency='Week',

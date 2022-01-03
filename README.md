@@ -63,6 +63,7 @@ Few notes on the SDK libraries:
 - [x] add 'hyperparameter' tuning 
 - [x] add 'automated ml' functionality
 - [] review and extend azureml function parameter comments
+- [] add part 'MLflow'
 - [] add part 'differential privacy'
 - [] add part 'interpret models'
 - [] add part 'detect unfairness'

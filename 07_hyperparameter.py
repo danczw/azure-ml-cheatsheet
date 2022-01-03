@@ -35,7 +35,7 @@ experiment_folder = './experiments' # Pipeline steps folder
 script_config = ScriptRunConfig(
     source_directory=experiment_folder,                         # Step py file location
     script='parameter_tuning.py',                               # Step py file name
-    # Add non-hyperparameter arguments -in this case, the training dataset
+    # Add non-hyperparameter arguments - in this case, the training dataset
     arguments = ['--input-data', diabetes_ds.as_named_input('training_data')],  # Reference to input dataset
     environment=registered_env,                                 # Experiment env
     compute_target = cluster_name                               # Compute target
