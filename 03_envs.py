@@ -19,7 +19,7 @@ Environment
     * Alternatively, create image on-demand based on the base image and additional settings in a dockerfile
 '''
 # Create a Python environment for the experiment (from a .yml file)
-experiment_env = Environment.from_conda_specification('experiment_env', 'environment.yml')
+experiment_env = Environment.from_conda_specification('ml_sdk_env', 'environment.yml')
 
 # Create a Python environment from an existing Conda environment
 # env = Environment.from_existing_conda_environment(name='training_environment', conda_environment_name='py_env')

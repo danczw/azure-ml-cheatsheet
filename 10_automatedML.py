@@ -37,7 +37,7 @@ for metric in automl_utils.get_primary_metrics('classification'):
 
 # Configure the automated machine learning run
 automl_config = AutoMLConfig(
-    name='Automated ML Experiment',                             # 
+    name='Automated ML Experiment',                             # Name of experiment
     task='classification',                                      # Type of task to run: 'classification', 'regression', or 'forecasting'
     compute_target=cluster_name,                                # Compute target
     training_data = train_ds,                                   # Training dataset

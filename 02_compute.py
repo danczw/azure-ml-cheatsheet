@@ -24,7 +24,15 @@ Azure Machine Learning supports a range of compute targets
     * Attached compute
         * Attached compute instances to the Azure ML workspace
         * e.g. Virtual Machine or Azure Databricks cluster
+
+Note: view different compute types in the README.md
 '''
+
+# View compute resources in workspace
+for compute_name in ws.compute_targets:
+    compute = ws.compute_targets[compute_name]
+    print('\t', compute.name, ':', compute.type)
+
 # Create new compute cluster if not already existing
 cluster_name = "ml-sdk-cc"
 try:
@@ -44,27 +52,3 @@ except ComputeTargetException:
 # Check on the status of the compute
 cluster_state = training_cluster.get_status()
 print(cluster_state.allocation_state, cluster_state.current_node_count)
-
-'''
-Azure Compute Targets:
-#==============================================================================#
-| Compute target         | Usage       | Description                           |
-|==============================================================================| 
-| Local web service      | Testing /   | Good for limited testing and          |
-|                        | debug       | troubleshooting.                      |
-|------------------------------------------------------------------------------| 
-| Azure Kubernetes       | Real-time   | Good for high-scale production        |
-| Service (AKS)	         | inference   | deployments. Provides autoscaling,    |
-|                        |             | and fast response times.              |
-|------------------------------------------------------------------------------|
-| Azure Container        | Testing     | Good for low scale, CPU-based         |
-| Instances (ACI)        |             | workloads.                            |
-|------------------------------------------------------------------------------|
-| Azure Machine Learning | Batch       | Run batch scoring on serverless       |
-| Compute Clusters	     | inference   | compute. Supports normal and          |
-|                        |             | low-priority VMs.                     |
-|------------------------------------------------------------------------------|
-| Azure IoT Edge         | IoT         | Deploy & serve ML models on           |
-| (Preview)              | module      | IoT devices.                          |
-#==============================================================================#
-'''

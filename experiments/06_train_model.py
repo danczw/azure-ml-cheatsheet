@@ -16,8 +16,9 @@ run = Run.get_context() 	                                        # method to ret
 
 #-----EXPERIMENT_PARAMETER-----------------------------------------------------#
 '''
-* increase the flexibility of your training experiment by adding parameters to your script
-* enabling you to repeat the same training experiment with different settings
+Experiment Parameter
+* Increase the flexibility of your training experiment by adding parameters to your script
+* Enabling to repeat the same training experiment with different settings
 '''
 parser = argparse.ArgumentParser()
 parser.add_argument('--training-data', type=str, dest='training_data', help='training data')

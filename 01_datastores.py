@@ -15,17 +15,12 @@ Azure Machine Learning Workspace
     * Deployment environments (dev, test and production)
     * Teams
     * Other organizing principle
-* assign role-based authorization policies to a workspace
+* Assign role-based authorization policies to a workspace
 * --> enabling management of permissions that restrict what actions specific Azure Active Directory (AAD) principals can perform
 '''
 # Load workspace from config JSON file
 ws = Workspace.from_config()
 print(ws.name, 'loaded')
-
-# view compute resources in workspace.compute_targets
-for compute_name in ws.compute_targets:
-    compute = ws.compute_targets[compute_name]
-    print('\t', compute.name, ':', compute.type)
 
 #-----DATASTORE----------------------------------------------------------------#
 '''
@@ -43,12 +38,12 @@ Datastores
 for ds_name in ws.datastores:
     print(ds_name, '- Default =', ds_name == ws.get_default_datastore().name)
 
-# # Register a new datastore
+# Register a new datastore
 try:
     # Check if datastore is already existing
     ml_sdk_ds = Datastore.get(ws, datastore_name='ml_sdk_ds')
 except:
-    blob_ds = Datastore.register_azure_blob_container(
+    ml_sdk_ds = Datastore.register_azure_blob_container(
         workspace=ws, 
         datastore_name='ml_sdk_ds', 
         container_name='data_container',

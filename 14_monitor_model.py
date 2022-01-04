@@ -1,3 +1,4 @@
+# Import libraries
 from azureml.core import Workspace
 from azureml.core.webservice import AciWebservice, Webservice
 import json
@@ -33,7 +34,7 @@ print(endpoint)
 #-----CONSUME_SERVICE----------------------------------------------------------#
 '''
 Consume deployed service
-* via endpoint and HTTP request
+* Via endpoint and HTTP request
     * Model in production is likely to be consumed by business applications 
     * --> usually do not use the Azure Machine Learning SDK
     * Instead, make HTTP requests to the web service

@@ -76,6 +76,7 @@ parallel_run_config = ParallelRunConfig(                        # Create a new r
     node_count=2                                                # Nodes in compute target used for parallel processing
 )
 
+# Define pipeline parallel step
 parallelrun_step = ParallelRunStep(
     name='batch-score-diabetes',                                # Step name
     parallel_run_config=parallel_run_config,                    # Pipeline config
@@ -120,7 +121,7 @@ for root, dirs, files in os.walk('diabetes-results'):
         if file.endswith('parallel_run_step.txt'):
             result_file = os.path.join(root,file)
 
-# cleanup output format
+# Cleanup output format
 df = pd.read_csv(result_file, delimiter=":", header=None)
 df.columns = ["File", "Prediction"]
 

@@ -113,6 +113,13 @@ print('Pipeline submitted for execution.')
 
 pipeline_run.wait_for_completion(show_output=True)
 
+# Review metrics for each step
+for run in pipeline_run.get_children():
+    print(run.name, ':')
+    metrics = run.get_metrics()
+    for metric_name in metrics:
+        print('\t',metric_name, ":", metrics[metric_name])
+
 #-----TROUBLESHOOT-------------------------------------------------------------#
 '''
 Troubleshoot the experiment run
@@ -161,16 +168,16 @@ pipeline_run.register_model(
     }
 )
 
-# List registered models
-# for model in Model.list(ws):
-#     print(model.name, 'version:', model.version)
-#     for tag_name in model.tags:
-#         tag = model.tags[tag_name]
-#         print ('\t',tag_name, ':', tag)
-#     for prop_name in model.properties:
-#         prop = model.properties[prop_name]
-#         print ('\t',prop_name, ':', prop)
-#     print('\n')
+# List registered models - training concept of latest model should be 'pipeline'
+for model in Model.list(ws):
+    print(model.name, 'version:', model.version)
+    for tag_name in model.tags:
+        tag = model.tags[tag_name]
+        print ('\t',tag_name, ':', tag)
+    for prop_name in model.properties:
+        prop = model.properties[prop_name]
+        print ('\t',prop_name, ':', prop)
+    print('\n')
 
 #-----ENDPOINT-----------------------------------------------------------------#
 '''
@@ -182,7 +189,10 @@ Endpoint for model training calls
 '''
 # Publish the pipeline from the run as a REST service
 published_pipeline = pipeline_run.publish_pipeline(
-    name='diabetes-training-pipeline', description='Trains diabetes model', version='1.0')
+    name='diabetes-training-pipeline',
+    description='Trains diabetes model',
+    version='1.0'
+)
 
 # Find its URI as a property of the published pipeline object
 rest_endpoint = published_pipeline.endpoint

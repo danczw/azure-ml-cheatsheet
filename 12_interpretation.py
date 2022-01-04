@@ -38,7 +38,7 @@ Experiment script
         * Creates a DockerConfiguration for the script run
 '''
 
-# Review ./experiments/* which includes interpret experiment file
+# Review ./experiments/* which includes interpret model file
 experiment_folder = './experiments'
 
 script_config = ScriptRunConfig(

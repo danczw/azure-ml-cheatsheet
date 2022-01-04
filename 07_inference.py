@@ -108,9 +108,6 @@ Consume deployed service
 endpoint = service.scoring_uri                                  # Determine the URL
 print(endpoint)
 
-x_new = [[2,180,74,24,21,23.9091702,1.488172308,22],
-         [0,148,58,11,179,39.19207553,0.160829008,45]]
-
 # Convert the array to a serializable list in a JSON document
 input_json = json.dumps({"data": x_new})
 
