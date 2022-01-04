@@ -1,8 +1,7 @@
 # Import libraries
-from azureml.core import Environment, Experiment, ScriptRunConfig, Workspace
+from azureml.core import Experiment, Environment, ScriptRunConfig, Workspace
 from azureml.core.runconfig import DockerConfiguration
 from azureml.widgets import RunDetails
-import os
 
 #-----WORKSPACE----------------------------------------------------------------#
 # Load workspace from config JSON file
@@ -34,39 +33,45 @@ Experiment script
         * Identifies the Python script file to be run in the experiment
         * Determines the compute target and Python environment
         * Creates a DockerConfiguration for the script run
-
-Note: when using file dataset:
-* Define path from which the script can read the files
-* Either use as_download or as_mount method
-    * as_download causes files in the file dataset to be downloaded to a temporary location on the compute where the script is being run
-    * as_mount creates a mount point from which the files can be streamed directly from the datastore
 '''
-
 # Review ./experiments/* which includes single experiment file
 experiment_folder = './experiments'                                 # Experiment script folder
 
-script_config = ScriptRunConfig(
+# Create a script config
+script_mlflow = ScriptRunConfig(
     source_directory=experiment_folder,
-    script='04_experiment_script.py',
+    script='05_experiment_script_mlflow.py',
     arguments = [                      
-        '--input-data', diabetes_ds.as_named_input('raw_data')    # Reference to tabular dataset
-        # , '--input-data', diabetes_ds.as_named_input('training_files').as_download()    # Reference to file dataset location
+        '--input-data', diabetes_ds.as_named_input('raw_data')      # Reference to tabular dataset
     ],
     environment=registered_env,
     compute_target=cluster_name,
     docker_runtime_config=DockerConfiguration(use_docker=True)      # Use docker to host environment
 )
 
-#-----EXPERIMENT---------------------------------------------------------------#
+#-----MLFLOW_EXPERIMENT--------------------------------------------------------#
+'''
+MLflow
+* Open-source product designed to manage the Machine Learning development lifecycle
+* MLflow Tracking -  log parameters, versions of libraries used, evaluation metrics, generated output files, etc.
+    * Parameter: Key-value pairs representing represent inputs (hyperparameter, function vars, etc.)
+    * Metrics: Key-value pairs representing how the model is performing
+    * Artifacts: Output files
+* MLflow Projects -  packaging up code in a manner, which allows for consistent deployment and the ability to reproduce results
+* MLflow Models - standardized format for packaging models for distribution
+* MLflow Model Registry - register models in a registry
+
+Note: for MLFlow logging see ./experiments/05_single_experiment_mlflow
+'''
 # Create an Azure ML experiment in workspace
-experiment_name = 'ml-sdk-experiment'
+experiment_name = 'ml-sdk-experiment-mlflow'
 experiment = Experiment(workspace=ws, name=experiment_name)
 
 #-----RUN----------------------------------------------------------------------#
 '''
 Run object is a reference to an individual run of an experiment in Azure Machine Learning
 '''
-run = experiment.submit(config=script_config)
+run = experiment.submit(config=script_mlflow)
 print('Experiment submitted for execution.')
 
 # In Jupyter Notebooks, use RunDetails widget to see a visualization of the run details
@@ -75,37 +80,8 @@ print('Experiment submitted for execution.')
 run.wait_for_completion()
 
 #-----LOGS---------------------------------------------------------------------#
-# View run history
-diabetes_experiment = ws.experiments[experiment_name]               # Retrieve an experiment
-for logged_run in diabetes_experiment.get_runs():                   # Iterate through runs
-    print('Run ID:', logged_run.id)
-    metrics = logged_run.get_metrics()
-    for key in metrics.keys():
-        print('-', key, metrics.get(key))
-
 # Get logged metrics
 metrics = run.get_metrics()
 for key in metrics.keys():
         print(key, metrics.get(key))
 print('\n')
-
-# Get logged files
-for file in run.get_file_names():
-    print(file)
-
-#-----TROUBLESHOOT-------------------------------------------------------------#
-'''
-Troubleshoot the experiment run
-* Use get_details method to retrieve basic details about the run
-* Use get_details_with_logs method to retrieve run details as well as contents of log files
-'''
-run_details = run.get_details_with_logs()
-print(f'Run details: \n\t{run_details}')
-
-# Download log files
-log_folder = 'downloaded-logs'
-run.get_all_logs(destination=log_folder)
-# Verify the files have been downloaded
-for root, directories, filenames in os.walk(log_folder): 
-    for filename in filenames:  
-        print (os.path.join(root,filename))

@@ -1,29 +1,14 @@
 # Import libraries
-from azureml.core import Environment, Experiment, Model, ScriptRunConfig, Workspace
+from azureml.core import Environment, Experiment, Model, Workspace
 from azureml.core.authentication import InteractiveLoginAuthentication
-from azureml.core.runconfig import DockerConfiguration, RunConfiguration
+from azureml.core.runconfig import RunConfiguration
 from azureml.data import OutputFileDatasetConfig
 from azureml.pipeline.core import Pipeline, ScheduleRecurrence, Schedule
 from azureml.pipeline.core.run import PipelineRun
 from azureml.pipeline.steps import PythonScriptStep
-import requests
 from azureml.widgets import RunDetails
 import os
-
-'''
-Experiment
-* Experiment is a named process, usually the running of a single script or a pipeline
-* Can generate metrics and outputs and be tracked in the Azure ML workspace
-* Experiment can be run multiple times, with different data, code, or settings
-* Azure ML tracks each run, enabling to view run history and compare results for each run
-
-* This is the entry script for the pipeline, combining:
-    * Uploaded dataset located in created datastore
-    * Provisioned compute target
-    * Defined Python environment
-* Adds a data preprocessing and a model training stepwise in a pipeline for more flexibility
-* Alternatively, for fast prototyping single script experiments can be run (see SCRIPT_SETUP)
-'''
+import requests
 
 #-----WORKSPACE----------------------------------------------------------------#
 # Load workspace from config JSON file
@@ -41,35 +26,6 @@ cluster_name = 'ml-sdk-cc'
 #-----ENVIRONMENT_SETUP--------------------------------------------------------#
 # Get the registered environment (see ./03_envs.py)
 registered_env = Environment.get(ws, 'experiment_env')
-
-#-----SCRIPT_SETUP-------------------------------------------------------------#
-'''
-Single step experiments
-* For running single step experiments, no pipeline need to be deployed
-* Simply create a script run config - similar to a single pipeline step
-    * Identifies the Python script file to be run in the experiment
-    * Determines the compute target and Python environment
-    * Creates a DockerConfiguration for the script run
-    * Setting its use_docker attribute to True to host the script's environment in a Docker container
-'''
-# script_config = ScriptRunConfig(
-#     source_directory=experiment_folder,
-#     script='train_model.py',
-#     arguments = [
-#         '--regularization', 0.1,                        
-#         '--input-data', diabetes_ds.as_named_input('training_data')],                     # Reference to tabular dataset
-#         # '--input-data', diabetes_ds.as_named_input('training_files').as_download()],    # Reference to file dataset location
-#     environment=registered_env,
-#     compute_target=cluster_name,
-#     docker_runtime_config=DockerConfiguration(use_docker=True)          # Use docker to host environment
-# )
-'''
-Note: when using file dataset:
-* Define path from which the script can read the files
-* Either use as_download or as_mount method
-    * as_download causes files in the file dataset to be downloaded to a temporary location on the compute where the script is being run
-    * as_mount creates a mount point from which the files can be streamed directly from the datastore
-'''
 
 #-----PIPELINE_SETUP-----------------------------------------------------------#
 '''
@@ -109,7 +65,7 @@ experiment_folder = './experiments' # Pipeline steps folder
 prep_step = PythonScriptStep(
     name = 'Prepare Data',                                      # Step name
     source_directory = experiment_folder,                       # Step py file location
-    script_name = 'data_prep.py',                               # Step py file name
+    script_name = '06_data_prep.py',                               # Step py file name
     arguments = [                                               # Experiment parameter 
         '--input-data', diabetes_ds.as_named_input('raw_data'), # Reference to tabular dataset
         '--prepped-data', prepped_data                          # Reference to output data
@@ -123,7 +79,7 @@ prep_step = PythonScriptStep(
 train_step = PythonScriptStep(
     name = 'Train and Register Model',                          # Step name
     source_directory = experiment_folder,                       # Step py file location
-    script_name = 'train_model.py',                             # Step py file name
+    script_name = '06_train_model.py',                             # Step py file name
     arguments = [                                               # Experiment parameter 
         '--training-data', prepped_data.as_input(),             # Reference to step 1 output data
         '--regularization', 0.1                                 # Regularizaton rate parameter
@@ -142,39 +98,22 @@ print('Pipeline is built.')
 
 #-----EXPERIMENT---------------------------------------------------------------#
 # Create an Azure ML experiment in workspace
-experiment_name = 'ml-sdk'
+experiment_name = 'ml-sdk-pipeline'
 experiment = Experiment(workspace=ws, name=experiment_name)
-print('Pipeline submitted for execution.')
 
 #-----RUN----------------------------------------------------------------------#
 '''
 Run object is a reference to an individual run of an experiment in Azure Machine Learning
 '''
 pipeline_run = experiment.submit(pipeline, regenerate_outputs=True)
+print('Pipeline submitted for execution.')
 
 # In Jupyter Notebooks, use RunDetails widget to see a visualization of the run details
 # RunDetails(pipeline_run).show()
 
 pipeline_run.wait_for_completion(show_output=True)
 
-#-----LOGS---------------------------------------------------------------------#
-# View run history
-# diabetes_experiment = ws.experiments[experiment_name]
-# for logged_run in diabetes_experiment.get_runs():                   # Iterate through runs
-#     print('Run ID:', logged_run.id)
-#     metrics = logged_run.get_metrics()
-#     for key in metrics.keys():
-#         print('-', key, metrics.get(key))
-
-# Get logged metrics
-# metrics = run.get_metrics()
-# for key in metrics.keys():
-#         print(key, metrics.get(key))
-# print('\n')
-# Get logged files
-# for file in run.get_file_names():
-#     print(file)
-
+#-----TROUBLESHOOT-------------------------------------------------------------#
 '''
 Troubleshoot the experiment run
 * Use get_details method to retrieve basic details about the run

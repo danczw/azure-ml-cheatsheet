@@ -67,7 +67,7 @@ ParallelRunStep
 # Define pipeline configuration
 parallel_run_config = ParallelRunConfig(                        # Create a new runconfig object for the pipeline
     source_directory='./service',                               # Web service entry script location 
-    entry_script="web_service.batch.py",                        # Web service entry script name
+    entry_script="web_service_batch.py",                        # Web service entry script name
     mini_batch_size="5",                                        # Batch size
     error_threshold=10,                                         # number of record failures (TabularDataset) and file failures (FileDataset) ignored during processing
     output_action="append_row",                                 # output organization
@@ -92,8 +92,8 @@ pipeline = Pipeline(workspace=ws, steps=[parallelrun_step])
 
 #-----EXPERIMENT---------------------------------------------------------------#
 # Create an Azure ML experiment in workspace
-experiment_name = 'mslearn-diabetes-batch'
-experiment = Experiment(ws, 'mslearn-diabetes-batch').submit(pipeline)
+experiment_name = 'ml-sdk-batch'
+experiment = Experiment(ws, experiment_name).submit(pipeline)
 print('Pipeline submitted for execution.')
 
 #-----RUN----------------------------------------------------------------------#
