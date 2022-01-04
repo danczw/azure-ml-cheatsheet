@@ -4,6 +4,8 @@ This repository is aggregating main functions, methods and ultimately the setup 
 
 Azure Machine Learning is a cloud-based service for creating and managing machine learning solutions. It's designed to help data scientists and machine learning engineers leverage their existing data processing and model development skills and frameworks, and scale their workloads to the cloud.
 
+Goal is to work / read through the scripts based on the overview order to get a better understanding of Azure ML Python SDK with as limited docs review needed as possible. 
+
 <img src="./assets/azure_ml.jpg" alt="Azure ML" width="400"/>
 
 <br>
@@ -13,17 +15,48 @@ Overview
 
 Scripts are in order of implementation:
 
-1. __Datastores:__ upload and registration of training data - [01_datastores.py](./01_datastores.py)
-2. __Compute:__ creating compute target for model training - [02_compute.py](./02_compute.py)
-3. __Environment:__ setup of experiment environment and dependencies - [03_envs.py](./03_envs.py)
-4. __Experiment:__ run single script experiment - [04_experiment.py](./04_experiment.py)
-6. __Pipeline:__ running experiments divided into pipeline steps - [06_pipeline.py](./06_pipeline.py)
-7. __Inference:__ set up web service and consume for inference - [07_inference.py](./07_inference.py)
-8. __Batch pipeline and inference:__ setup pipeline and inference for batch processing - [08_batch_pipeline_inference.py](./08_batch_pipeline_inference.py)
-9. __Hyperparamenter:__ tune and evaluate hyperparameter for model performance - [09_hyperparameter.py](./09_hyperparameter.py)
-10. __Automated ML:__ run automated Machine Learning experiments for various model testing - [10_automatedML.py](./10_automatedML.py)
-11. __Privacy:__ explore differential privacy to preserve the privacy of individual data points - [11_privacy.py](./11_privacy.py)
-12. __Interpretation:__ explain global and local feature importance - [12_interpretation.py](./12_interpretation.py)
+1. __Datastores__
+    - Upload and registration of training data
+    - Main script: [01_datastores.py](./01_datastores.py)
+2. __Compute__
+    - Creating compute target for model training
+    - Main script: [02_compute.py](./02_compute.py)
+3. __Environment__
+    - Setup of experiment environment and dependencies
+    - Main script: [03_envs.py](./03_envs.py)
+4. __Experiment__
+    - Run single script experiment
+    - Main script: [04_experiment.py](./04_experiment.py)
+6. __Pipeline__
+    - Running experiments divided into pipeline steps
+    - Main script: [06_pipeline.py](./06_pipeline.py)
+7. __Inference__
+    - Set up web service and consume for inference
+    - Main script: [07_inference.py](./07_inference.py)
+8. __Batch pipeline and inference__
+    - Setup pipeline and inference for batch processing
+    - Main script: [08_batch_pipeline_inference.py](./08_batch_pipeline_inference.py)
+9. __Hyperparamenter__
+    - Tune and evaluate hyperparameter for model performance
+    - Main script: [09_hyperparameter.py](./09_hyperparameter.py)
+10. __Automated ML__
+    - Run automated Machine Learning experiments for various model testing
+    - Main script: [10_automatedML.py](./10_automatedML.py)
+11. __Privacy__
+    - Explore differential privacy to preserve the privacy of individual data points
+    - Main script: [11_privacy.py](./11_privacy.py)
+12. __Interpretation__
+    - Explain global and local feature importance
+    - Main script: [12_interpretation.py](./12_interpretation.py)
+13. __Unfairness__
+    - Analyze disparity between prediction performance across sensitive feature groups
+    - Main script: [13_unfairness.py](./13_unfairness.py)
+14. __Monitor model__
+    - Monitor telemetry from models on Azure ML
+    - Main script: [14_monitor_model.py](./14_monitor_model.py)
+15. __Data drift__
+    - Capture new data in a dataset and compare to dataset with which model is trained
+    - Main script: [15_data_drift.py](./15_data_drift.py)
 
 <br>
 
@@ -118,6 +151,10 @@ Overview of main Azure ML SDK libraries used in this repo.
     - Contains Azure Machine Learning exception classes.
     - Packages: `core`, `data`, `exceptions`, `history`
     - [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-core/?view=azure-ml-py)
+- __azureml-datadrift__
+    - Contains functionality to detect when model training data has drifted from its scoring data.
+    - Packages: `datadrift`
+    - [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-datadrift/?view=azure-ml-py)
 - __azureml-interpret__
     - Contains functionality for working with model interpretability in Azure Machine Learning.
     - Packages: `interpret`
