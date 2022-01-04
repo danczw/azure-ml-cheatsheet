@@ -104,16 +104,52 @@ The compute in Azure ML looks like:
 
 Overview of main Azure ML SDK libraries used in this repo.
 
-- __azureml-automl-core:__ Contains automated machine learning classes for executing runs in Azure Machine Learning. [Microsoft Docs - Core](https://docs.microsoft.com/en-us/python/api/azureml-automl-core/?view=azure-ml-py)
-- __azureml-automl-runtime:__ Contains automated machine learning classes for executing runs and transforming data in Azure Machine Learning. [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-automl-runtime/?view=azure-ml-py)
-- __azureml-core:__ Contains core packages, modules, and classes for Azure Machine Learning. [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-core/?view=azure-ml-py)
-- __azureml-interpret:__ Contains functionality for working with model interpretability in Azure Machine Learning. [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-interpret/?view=azure-ml-py)
-- __azureml-mlflow:__ Contains functionality integrating Azure Machine Learning with MLFlow: open source platform for managing machine learning processes which can also be used to track metrics as an alternative to the native log functionality [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-mlflow/?view=azure-ml-py)
-- __azureml-pipeline-core:__ Contains core functionality for Azure Machine Learning pipelines, which are configurable machine learning workflows. [Microsoft Docs - Core](https://docs.microsoft.com/en-us/python/api/azureml-pipeline-core/?view=azure-ml-py)
-- __azureml-pipeline-steps:__ Contains pre-built steps that can be executed in an Azure Machine Learning Pipeline. [Microsoft Docs - Steps](https://docs.microsoft.com/en-us/python/api/azureml-pipeline-steps/?view=azure-ml-py)
-- __azureml-train-runtime:__ Package containing modules providing resources for configuring, managing pipelines, and examining run output for automated machine learning experiments. [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-train-automl-runtime/?view=azure-ml-py)
-- __azureml-train-core:__ Contains modules and classes supporting hyperparameter tuning as well as estimators used in Deep Neural Network (DNN) training and base estimator classes and the generic estimator class in Azure Machine Learning. [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-train-core/?view=azure-ml-py)
-- __azureml-widgets:__ Contains functionality to view the progress of machine learning training runs in Jupyter Notebooks. [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-widgets/?view=azure-ml-py)
+- __azureml-automl-core__
+    - Contains automated machine learning classes for executing runs in Azure Machine Learning.
+    - Packages: `core`
+    - [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-automl-core/?view=azure-ml-py)
+- __azureml-automl-runtime__
+    - Contains automated machine learning classes for executing runs and transforming data in Azure Machine Learning.
+    - Packages: `runtimer`, `transformer`
+    - [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-automl-runtime/?view=azure-ml-py)
+- __azureml-core__
+    - Contains core packages, modules, and classes for Azure Machine Learning: managing compute targets, creating/managing workspaces and experiments, and submitting/accessing model runs and run output/logging.
+    - Contains modules supporting data representation for Datastore and Dataset in Azure Machine Learning.
+    - Contains Azure Machine Learning exception classes.
+    - Packages: `core`, `data`, `exceptions`, `history`
+    - [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-core/?view=azure-ml-py)
+- __azureml-interpret__
+    - Contains functionality for working with model interpretability in Azure Machine Learning.
+    - Packages: `interpret`
+    - [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-interpret/?view=azure-ml-py)
+- __azureml-mlflow__
+    - Contains functionality integrating Azure Machine Learning with MLFlow: open source platform for managing machine learning processes which can also be used to track metrics as an alternative to the native log functionality
+    - Packages: `mlflow`
+    - [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-mlflow/?view=azure-ml-py)
+- __azureml-pipeline-core__
+    - Contains core functionality for Azure Machine Learning pipelines, which are configurable machine learning workflows.
+    - Packages: `core`
+    - [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-pipeline-core/?view=azure-ml-py)
+- __azureml-pipeline-steps__
+    - Contains pre-built steps that can be executed in an Azure Machine Learning Pipeline.
+    - Packages: `steps`
+    - [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-pipeline-steps/?view=azure-ml-py)
+- __azureml-train-runtime__
+    - Package containing modules providing resources for configuring, managing pipelines, and examining run output for automated machine learning experiments.
+    - Packages: `automl`
+    - [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-train-automl-runtime/?view=azure-ml-py)
+- __azureml-train-core__
+    - Contains estimators used in Deep Neural Network (DNN) training.
+    - Contains base estimator classes and the generic estimator class in Azure Machine Learning.
+    - Contains modules and classes supporting hyperparameter tuning.
+    - Contains an estimator for training with Scikit-Learn.
+    - Packages: `dnn`, `estimator`, `hyperdrive`
+    - Modules: `sklearn`
+    - [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-train-core/?view=azure-ml-py)
+- __azureml-widgets__
+    - Contains functionality to view the progress of machine learning training runs in Jupyter Notebooks.
+    - Packages: `widgets`
+    - [Microsoft Docs](https://docs.microsoft.com/en-us/python/api/azureml-widgets/?view=azure-ml-py)
 
 <br>
 
