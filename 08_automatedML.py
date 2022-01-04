@@ -85,19 +85,19 @@ for run in automl_run.get_children():
 # Get best run and respective model metrics
 best_run, fitted_model = automl_run.get_output()
 print(best_run)
+
 print('\nBest Model Definition:')
 print(fitted_model)
+
 print('\nBest Run Transformations:')
 for step in fitted_model.named_steps:
     print(step)
+
 print('\nBest Run Metrics:')
 best_run_metrics = best_run.get_metrics()
 for metric_name in best_run_metrics:
     metric = best_run_metrics[metric_name]
     print(metric_name, metric)
-
-from azureml.core import Model
-
 
 #-----REGISTER_MODEL-----------------------------------------------------------#
 '''

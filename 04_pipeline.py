@@ -12,8 +12,8 @@ import os
 
 '''
 Experiment
-* Eexperiment is a named process, usually the running of a single script or a pipeline
-    * Can generate metrics and outputs and be tracked in the Azure ML workspace
+* Experiment is a named process, usually the running of a single script or a pipeline
+* Can generate metrics and outputs and be tracked in the Azure ML workspace
 * Experiment can be run multiple times, with different data, code, or settings
 * Azure ML tracks each run, enabling to view run history and compare results for each run
 
@@ -33,9 +33,6 @@ print(ws.name, 'loaded')
 #-----DATASET------------------------------------------------------------------#
 # Get the training dataset from registered datasets (see ./01_datastores.py)
 diabetes_ds = ws.datasets.get('diabetes dataset')
-
-# Create an OutputFileDatasetConfig (temporary Data Reference) for data passed from step 1 to step 2
-prepped_data = OutputFileDatasetConfig('prepped_data')
 
 #-----COMPUTE_TARGET-----------------------------------------------------------#
 # Define compute target (see ./02_compute.py)
@@ -100,8 +97,10 @@ This repo defines a simple pipeline containing two Python script steps:
 pipeline_run_config = RunConfiguration()                        # Create a new runconfig object for the pipeline
 pipeline_run_config.target = cluster_name                       # Use the compute registered
 pipeline_run_config.environment = registered_env                # Assign the environment to the run configuration
-
 print ('Run configuration created.')
+
+# Create an OutputFileDatasetConfig (temporary Data Reference) for data passed from step 1 to step 2
+prepped_data = OutputFileDatasetConfig('prepped_data')
 
 # Review ./experiments/* which includes example pipeline steps
 experiment_folder = './experiments' # Pipeline steps folder
