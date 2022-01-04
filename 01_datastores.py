@@ -1,7 +1,10 @@
 # Import libraries
 from azureml.core import Dataset, Datastore, Workspace
+from dotenv import load_dotenv
 import os
 import pandas as pd
+
+load_dotenv()
 
 #-----WORKSPACE----------------------------------------------------------------#
 '''
@@ -20,9 +23,9 @@ ws = Workspace.from_config()
 print(ws.name, 'loaded')
 
 # view compute resources in workspace.compute_targets
-# for compute_name in ws.compute_targets:
-#     compute = ws.compute_targets[compute_name]
-#     print('\t', compute.name, ':', compute.type)
+for compute_name in ws.compute_targets:
+    compute = ws.compute_targets[compute_name]
+    print('\t', compute.name, ':', compute.type)
 
 #-----DATASTORE----------------------------------------------------------------#
 '''
@@ -40,21 +43,24 @@ Datastores
 for ds_name in ws.datastores:
     print(ds_name, '- Default =', ds_name == ws.get_default_datastore().name)
 
-# TODO: add .env and refactor code to create new datastore
 # # Register a new datastore
-# blob_ds = Datastore.register_azure_blob_container(
-#     workspace=ws, 
-#     datastore_name='blob_data', 
-#     container_name='data_container',
-#     account_name='YOUR-ACCOUNT-NAME',
-#     account_key='YOUR-AACOUNT-KEY'
-# )
-
-# Get reference to new datastore
-# blob_store = Datastore.get(ws, datastore_name='blob_data')
+try:
+    # Check if datastore is already existing
+    ml_sdk_ds = Datastore.get(ws, datastore_name='ml_sdk_ds')
+except:
+    blob_ds = Datastore.register_azure_blob_container(
+        workspace=ws, 
+        datastore_name='ml_sdk_ds', 
+        container_name='data_container',
+        account_name=os.getenv('AZURE-ACCOUNT-NAME'),
+        account_key=os.getenv('AZURE-ACCOUNT-KEY')
+    )
+    
+    # Get reference to new datastore
+    ml_sdk_ds = Datastore.get(ws, datastore_name='ml_sdk_ds')
 
 # Set default store
-# ws.set_default_datastore('blob_data')
+ws.set_default_datastore('ml_sdk_ds')
 default_ds = ws.get_default_datastore() # assign new default datastore variable
 
 #-----UPLOAD_DATA--------------------------------------------------------------#
@@ -99,17 +105,14 @@ os.makedirs(batch_folder, exist_ok=True)
 print("Folder created!")
 
 # Save each sample as a separate file
-print("Saving files...")
 for i in range(100):
     fname = str(i+1) + '.csv'
     sample[i].tofile(os.path.join(batch_folder, fname), sep=",")
-print("files saved!")
+print("Files saved!")
 
 # Upload the files to the default datastore
-print("Uploading files to datastore...")
 default_ds.upload(src_dir="batch-data", target_path="batch-data", overwrite=True, show_progress=True)
-
-print("Data uploaded!")
+print("Batch data uploaded!")
 
 #-----REGISTER_DATASET---------------------------------------------------------#
 '''

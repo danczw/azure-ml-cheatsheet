@@ -1,5 +1,9 @@
+# Folder
 .vscode/
 downloaded-logs/
 downloaded-files/
 batch-data/
+
+# Files
 config.json
+.env
