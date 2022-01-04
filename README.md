@@ -27,6 +27,9 @@ Scripts are in order of implementation:
 4. __Experiment__
     - Run single script experiment
     - Main script: [04_experiment.py](./04_experiment.py)
+5. __ML Flow__
+    - Manage the Machine Learning development lifecycle
+    - Main script: [05_mlflow.py](./05_mlflow.py)
 6. __Pipeline__
     - Running experiments divided into pipeline steps
     - Main script: [06_pipeline.py](./06_pipeline.py)
