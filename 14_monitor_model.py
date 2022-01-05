@@ -6,7 +6,7 @@ import requests
 
 #-----WORKSPACE----------------------------------------------------------------#
 # Load workspace from config JSON file
-ws = Workspace.from_config()
+ws = Workspace.from_config()                                    # Returns a workspace object based on config file 
 print(ws.name, 'loaded')
 
 #-----WEB_SERVICE--------------------------------------------------------------#
@@ -14,17 +14,20 @@ print(ws.name, 'loaded')
 for webservice_name in ws.webservices:
     print(webservice_name)
 
-service = Webservice(ws, 'diabetes-service-app-insights')
+service = Webservice(                                           # Defines base functionality for deploying models as web service endpoints in Azure ML
+    ws,                                                         # Workspace object containing Webservice object to retrieve
+    'diabetes-service-app-insights'                             # Name of the of the Webservice object to retrieve
+)
 
 #-----APPINSIGHTS--------------------------------------------------------------#
 '''
 Application Insights
 * Application performance management service
 * Enables the capture, storage, and analysis of telemetry data from applications
-* Necessary package is already included in Azure Machine Learning Web services
+* Necessary package is already included in Azure ML Web services
 '''
 # Enable AppInsights
-service.update(enable_app_insights=True)
+service.update(enable_app_insights=True)                        # Update the Webservice parameters
 print('AppInsights enabled!')
 
 #-----SERVICE------------------------------------------------------------------#
@@ -36,7 +39,7 @@ print(endpoint)
 Consume deployed service
 * Via endpoint and HTTP request
     * Model in production is likely to be consumed by business applications 
-    * --> usually do not use the Azure Machine Learning SDK
+    * --> usually do not use the Azure ML SDK
     * Instead, make HTTP requests to the web service
 '''
 

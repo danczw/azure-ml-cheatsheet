@@ -11,14 +11,15 @@ from sklearn.tree import DecisionTreeClassifier
 
 #-----WORKSPACE----------------------------------------------------------------#
 # Load workspace from config JSON file
-ws = Workspace.from_config()
+ws = Workspace.from_config()                                    # Returns a workspace object based on config file 
 print(ws.name, 'loaded')
 
 #-----DATASET------------------------------------------------------------------#
 # Get the training dataset from registered datasets (see ./01_datastores.py)
-data = ws.datasets.get('diabetes dataset')
+data = ws.datasets.get('diabetes dataset')                      # Get specified dataset from list of all datasets in workspace
 print(data)
 
+#-----DATA_PREPROCESSING-------------------------------------------------------#
 # Separate features and labels
 features = ['Pregnancies','PlasmaGlucose','DiastolicBloodPressure','TricepsThickness','SerumInsulin','BMI','DiabetesPedigree','Age']
 X, y = data[features].values, data['Diabetic'].values
@@ -93,7 +94,7 @@ Mitigating unfairness
     * Use stratified splitting algorithms to maintain representative proportions for training and validation
 * Perform extensive feature selection and engineering analysis
     * Fully explore the interconnected correlations in data to try to differentiate features that are directly predictive from features that encapsulate more complex, nuanced relationships
-	* Use the model interpretability support in Azure Machine Learning to understand how individual features influence predictions.
+	* Use the model interpretability support in Azure ML to understand how individual features influence predictions.
 * Evaluate models for disparity based on significant features
     * Trade-off overall predictive performance for lower disparity in predictive performance between sensitive feature groups
     * --> 99.5% accuracy with comparable performance across all groups often more desirable than model that is 99.9% accurate but discriminates against a particular subset of cases

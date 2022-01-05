@@ -12,12 +12,12 @@ import requests
 
 #-----WORKSPACE----------------------------------------------------------------#
 # Load workspace from config JSON file
-ws = Workspace.from_config()
+ws = Workspace.from_config()                                    # Returns a workspace object based on config file 
 print(ws.name, 'loaded')
 
 #-----DATASET------------------------------------------------------------------#
 # Get the batch training dataset from registered datasets (see ./01_datastores.py)
-batch_data_set = ws.datasets.get('batch-data')
+batch_data_set = ws.datasets.get('batch-data')                  # Get specified dataset from list of all datasets in workspace
 
 # Create an OutputFileDatasetConfig (temporary Data Reference) for data passed from step 1 to step 2
 output_dir = OutputFileDatasetConfig(name='inferences')
@@ -28,17 +28,17 @@ cluster_name = 'ml-sdk-cc'
 
 #-----ENVIRONMENT_SETUP--------------------------------------------------------#
 # Get the registered environment (see ./03_envs.py)
-registered_env = Environment.get(ws, 'experiment_env')
-registered_env.base_image = DEFAULT_CPU_IMAGE
+registered_env = Environment.get(ws, 'experiment_env')          # Get specified environment object from workspace
+registered_env.base_image = DEFAULT_CPU_IMAGE                   # Base image used for Docker-based runs
 
 #-----MODEL--------------------------------------------------------------------#
 # Get the model - by default if model name is specified, latest version will be returned 
-model = ws.models['diabetes_model']
+model = ws.models['diabetes_model']                             # # Get model by name from current workspace
 print(model.name, 'version', model.version)
 
 #-----PIPELINE_SETUP-----------------------------------------------------------#
 '''
-Azure Machine Learning Pipelines
+Azure ML Pipelines
 * Consist of one or more steps
 * Can be Python scripts, or specialized steps like a data transfer step copying data from one location to another
 * Each step can run in its own compute context
@@ -51,7 +51,7 @@ This repo defines a simple pipeline containing two Python script steps:
     * Subsequent steps are triggered only if the output from step one changes
     * For convenience reuse enables to only run any steps with changed parameter
 
-* Common kinds of step in an Azure Machine Learning pipeline:
+* Common step types in an Azure ML pipeline:
     * PythonScriptStep: Runs specified Python script
     * DataTransferStep: Uses Azure Data Factory to copy data between data stores
     * DatabricksStep:   Runs notebook, script, or compiled JAR on a databricks cluster
@@ -65,55 +65,67 @@ ParallelRunStep
 * Results collated in single output file named parallel_run_step.txt
 '''
 # Define pipeline configuration
-parallel_run_config = ParallelRunConfig(                        # Create a new runconfig object for the pipeline
-    source_directory='./service',                               # Web service entry script location 
-    entry_script="web_service_batch.py",                        # Web service entry script name
-    mini_batch_size="5",                                        # Batch size
+parallel_run_config = ParallelRunConfig(                        # Defines configuration for a ParallelRunStep object
+    source_directory='./service',                               # Path to folder that contains the entry_script and supporting files used to execute on compute target
+    entry_script="web_service_batch.py",                        # User script to be run in parallel on multiple nodes
+    mini_batch_size="5",                                        # For TabularDataset input, this field is the approximate size of data the user script can process in one run() call
     error_threshold=10,                                         # number of record failures (TabularDataset) and file failures (FileDataset) ignored during processing
-    output_action="append_row",                                 # output organization
-    environment=registered_env,                                 # Inference env
-    compute_target=cluster_name,                                # Compute target
-    node_count=2                                                # Nodes in compute target used for parallel processing
+    output_action="append_row",                                 # How the output should be organized
+    environment=registered_env,                                 # Environment definition that configures the Python environment
+    compute_target=cluster_name,                                # Compute target to use for ParallelRunStep execution
+    node_count=2                                                # Number of nodes in the compute target used for running the ParallelRunStep
 )
 
 # Define pipeline parallel step
-parallelrun_step = ParallelRunStep(
-    name='batch-score-diabetes',                                # Step name
-    parallel_run_config=parallel_run_config,                    # Pipeline config
-    inputs=[batch_data_set.as_named_input('diabetes_batch')],   # Input data
-    output=output_dir,                                          # Output directory
-    arguments=[],                                               # Experiment parameter
-    allow_reuse=True                                            # Reuse of previous calculations
+parallelrun_step = ParallelRunStep(                             # Creates an Azure Machine Learning Pipeline step to process large amounts of data asynchronously and in parallel
+    name='batch-score-diabetes',                                # Name of the step
+    parallel_run_config=parallel_run_config,                    # A ParallelRunConfig object used to determine required run properties
+    inputs=[batch_data_set.as_named_input('diabetes_batch')],   # List of input datasets
+    output=output_dir,                                          # Output port binding, may be used by later pipeline steps
+    arguments=[],                                               # List of command-line arguments to pass to the Python entry_script
+    allow_reuse=True                                            # Whether the step should reuse previous results when run with the same settings/inputs
 )
 
 print('Steps defined')
 
 # Construct the pipeline
-pipeline = Pipeline(workspace=ws, steps=[parallelrun_step])
+pipeline = Pipeline(                                            # Create and manage workflows that stitch together various machine learning phases
+    workspace=ws,                                               # Workspace to submit the Pipeline on
+    steps=[parallelrun_step]                                    # List of steps to execute as part of a Pipeline
+)
+
+print('Pipeline is built.')
 
 #-----EXPERIMENT---------------------------------------------------------------#
 # Create an Azure ML experiment in workspace
 experiment_name = 'ml-sdk-batch'
-experiment = Experiment(ws, experiment_name).submit(pipeline)
+experiment = Experiment(                                        # Main entry point class for creating and working with experiments in Azure Machine Learning
+    workspace=ws,                                               # Workspace object containing the experiment
+    name=experiment_name                                        # Experiment name
+)
 print('Pipeline submitted for execution.')
 
 #-----RUN----------------------------------------------------------------------#
 '''
-Run object is a reference to an individual run of an experiment in Azure Machine Learning
+Run object is a reference to an individual run of an experiment in Azure ML
 '''
-pipeline_run = experiment.submit(pipeline, regenerate_outputs=True)
+# Submit an experiment incl config to be submitted and return the active created run
+pipeline_run = experiment.submit(                               # Run defines the base class for all Azure Machine Learning experiment runs
+    pipeline,                                                   # Config to be submitted
+    regenerate_outputs=True                                     # Whether to force regeneration of all step outputs and disallow data reuse for run, default is False
+)                                   
+print('Pipeline submitted for execution.')
 
 # In Jupyter Notebooks, use RunDetails widget to see a visualization of the run details
-# RunDetails(pipeline_run).show()                                     # Show details
+# RunDetails(pipeline_run).show()
 
-# run.wait_for_completion()                                           # Asynchronous - does not work with local execution
-pipeline_run.wait_for_completion(show_output=True)
+pipeline_run.wait_for_completion()                              # Wait for the completion of this run, returns the status object after the wait
 
 #-----LOGS---------------------------------------------------------------------#
 # Get the run for the first and only step and download its output
-prediction_run = next(pipeline_run.get_children())
-prediction_output = prediction_run.get_output_data('inferences')
-prediction_output.download(local_path='diabetes-results')
+prediction_run = next(pipeline_run.get_children())              # Get all children for the current run selected by specified filters
+prediction_output = prediction_run.get_output_data('inferences')    # Get the output data from a given output
+prediction_output.download(local_path='diabetes-results')       # Download the data represented by the PortDataReference
 
 # Traverse the folder hierarchy and find the results file
 for root, dirs, files in os.walk('diabetes-results'):
@@ -137,30 +149,37 @@ Endpoint for model training calls
 * For now, use the authorization header from the current connection to Azure workspace
 '''
 # Publish the pipeline from the run as a REST service
-published_pipeline = pipeline_run.publish_pipeline(
-    name='diabetes-batch-pipeline', description='Batch scoring of diabetes data', version='1.0')
+published_pipeline = pipeline_run.publish_pipeline(             # Publish a pipeline and make it available for rerunning
+    name='diabetes-batch-pipeline',                             # Name of the published pipeline
+    description='Batch scoring of diabetes data',               # Description of the published pipeline
+    version='1.0'                                               # Version of the published pipeline
+)
 
 # Find its URI as a property of the published pipeline object
-rest_endpoint = published_pipeline.endpoint
+rest_endpoint = published_pipeline.endpoint                     # REST endpoint URL to submit runs for this pipeline
 print(rest_endpoint)
 
 # Define authentication header
-interactive_auth = InteractiveLoginAuthentication()
-auth_header = interactive_auth.get_authentication_header()
+interactive_auth = InteractiveLoginAuthentication()             # Manages authentication and acquires an authorization token in interactive login workflows
+auth_header = interactive_auth.get_authentication_header()      # Return the HTTP authorization header, authorization header contains the user access token for access authorization against the service
 print('Authentication header ready.')
 
 # Make REST call to get pipeline run ID
-rest_endpoint = published_pipeline.endpoint
-response = requests.post(rest_endpoint, 
-                         headers=auth_header, 
-                         json={"ExperimentName": "mslearn-diabetes-batch"})
-run_id = response.json()["Id"]
+response = requests.post(
+    rest_endpoint, 
+    headers=auth_header, 
+    json={'ExperimentName': experiment_name}
+)
+run_id = response.json()['Id']
 
 # Use run ID to wait for pipeline to finish
-published_pipeline_run = PipelineRun(ws.experiments[experiment_name], run_id)
-published_pipeline_run.wait_for_completion(show_output=True)
+published_pipeline_run = PipelineRun(                           # Represents a run of a Pipeline
+    ws.experiments[experiment_name],                            # Experiment object associated with the pipeline run
+    run_id                                                      # Run ID of the pipeline run
+)
+published_pipeline_run.wait_for_completion()                    # Wait for the completion of this run, returns the status object after the wait
 
 # Get details of latest run
-pipeline_experiment = ws.experiments.get(experiment_name)
-latest_run = list(pipeline_experiment.get_runs())[0]
-latest_run.get_details()
+pipeline_experiment = ws.experiments.get(experiment_name)       # Get experiment by name of current workspace
+latest_run = list(pipeline_experiment.get_runs())[0]            # Return a generator of the runs for this experiment, in reverse chronological order
+latest_run.get_details()                                        # Get the definition, status information, current log files, and other details of the run

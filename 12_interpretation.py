@@ -5,12 +5,12 @@ from azureml.interpret import ExplanationClient
 
 #-----WORKSPACE----------------------------------------------------------------#
 # Load workspace from config JSON file
-ws = Workspace.from_config()
+ws = Workspace.from_config()                                    # Returns a workspace object based on config file 
 print(ws.name, 'loaded')
 
 #-----DATASET------------------------------------------------------------------#
 # Get the training dataset from registered datasets (see ./01_datastores.py)
-diabetes_ds = ws.datasets.get('diabetes dataset')
+diabetes_ds = ws.datasets.get('diabetes dataset')               # Get specified dataset from list of all datasets in workspace
 
 # Split for train and test dataset
 train_ds, test_ds = diabetes_ds.random_split(percentage=0.7, seed=123)
@@ -21,7 +21,7 @@ cluster_name = 'ml-sdk-cc'
 
 #-----ENVIRONMENT_SETUP--------------------------------------------------------#
 # Get the registered environment (see ./03_envs.py)
-registered_env = Environment.get(ws, 'experiment_env')
+registered_env = Environment.get(ws, 'experiment_env')          # Get specified environment object from workspace
 
 #-----SCRIPT_SETUP-------------------------------------------------------------#
 '''
@@ -41,33 +41,37 @@ Experiment script
 # Review ./experiments/* which includes interpret model file
 experiment_folder = './experiments'
 
-script_config = ScriptRunConfig(
-    source_directory=experiment_folder,
-    script='12_interpret_model.py',
-    arguments = [                      
-        '--input-data', diabetes_ds.as_named_input('raw_data')    # Reference to tabular dataset
+script_config = ScriptRunConfig(                                # Represents configuration information for submitting a training run in Azure Machine Learning
+    source_directory=experiment_folder,                         # Local directory containing code files needed for a run
+    script='12_interpret_model.py',                             # File path relative to the source_directory of the script to be run
+    arguments = [                                               # Optional command line arguments to pass to the training script
+        '--input-data', diabetes_ds.as_named_input('raw_data')  # Reference to tabular dataset
     ],
-    environment=registered_env,
-    compute_target=cluster_name,
-    docker_runtime_config=DockerConfiguration(use_docker=True)      # Use docker to host environment
+    environment=registered_env,                                 # Environment to use for run, if no environment is specified, azureml.core.runconfig.DEFAULT_CPU_IMAGE will be used as the Docker image for the run                      
+    compute_target=cluster_name,                                # Compute target where training will happen, can be ComputeTarget object, existing ComputeTarget name, or the string "local" (default)
+    docker_runtime_config=DockerConfiguration(use_docker=True)  # For jobs that require Docker runtime-specific configurations
 )
 
 #-----EXPERIMENT---------------------------------------------------------------#
 # Create an Azure ML experiment in workspace
 experiment_name = 'ml-sdk-interpret'
-experiment = Experiment(workspace=ws, name=experiment_name)
+experiment = Experiment(                                        # Main entry point class for creating and working with experiments in Azure Machine Learning
+    workspace=ws,                                               # Workspace object containing the experiment
+    name=experiment_name                                        # Experiment name
+)
 
 #-----RUN----------------------------------------------------------------------#
 '''
-Run object is a reference to an individual run of an experiment in Azure Machine Learning
+Run object is a reference to an individual run of an experiment in Azure ML
 '''
-run = experiment.submit(config=script_config)
+# Submit an experiment incl config to be submitted and return the active created run
+run = experiment.submit(config=script_config)                   # Run defines the base class for all Azure Machine Learning experiment runs                
 print('Experiment submitted for execution.')
 
 # In Jupyter Notebooks, use RunDetails widget to see a visualization of the run details
 # RunDetails(run).show()
 
-run.wait_for_completion()
+run.wait_for_completion()                                       # Wait for the completion of this run, returns the status object after the wait
 
 #-----EXPLANATION--------------------------------------------------------------#
 '''
@@ -98,9 +102,9 @@ Feature Importance
         * Local importance values simply indicate the level of influence each feature has on the predicted scalar label
 '''
 # Get the feature explanations
-client = ExplanationClient.from_run(run)
-engineered_explanations = client.download_model_explanation()
-feature_importances = engineered_explanations.get_feature_importance_dict()
+client = ExplanationClient.from_run(run)                        # Defines client that uploads and downloads explanations: create client with factory method given a run
+engineered_explanations = client.download_model_explanation()   # Download a model explanation that has been stored in run history
+feature_importances = engineered_explanations.get_feature_importance_dict()     # Dict with global feature importance
 
 # Overall feature importance
 print('Feature\tImportance')

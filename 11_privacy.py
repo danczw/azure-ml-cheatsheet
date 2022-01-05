@@ -6,12 +6,12 @@ import pandas as pd
 
 #-----WORKSPACE----------------------------------------------------------------#
 # Load workspace from config JSON file
-ws = Workspace.from_config()
+ws = Workspace.from_config()                                    # Returns a workspace object based on config file 
 print(ws.name, 'loaded')
 
 #-----DATASET------------------------------------------------------------------#
 # Get the training dataset from registered datasets (see ./01_datastores.py)
-data = ws.datasets.get('diabetes dataset')
+data = ws.datasets.get('diabetes dataset')                      # Get specified dataset from list of all datasets in workspace
 
 #-----DIFFERENTIAL_PRIVACY-----------------------------------------------------#
 '''
