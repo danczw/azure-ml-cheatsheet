@@ -23,10 +23,10 @@ registered_env = Environment.get(ws, 'experiment_env')          # Get specified 
 #-----SCRIPT_SETUP-------------------------------------------------------------#
 '''
 Hyperparameter tuning
-* hyperparameter: parameter values that influence training, but can't be determined from the training data itself
-* e.g.: for logistic regression model tune regularization rate hyperparameter to counteract bias in the model
-* choice of hyperparameter values can significantly affect the performance of a trained model, or the time taken to train it
-* often try of multiple combinations to find the optimal solution is needed
+* Hyperparameter: parameter values that influence training, but can't be determined from the training data itself
+* E.g.: for logistic regression model tune regularization rate hyperparameter to counteract bias in the model
+* Choice of hyperparameter values can significantly affect the performance of a trained model, or the time taken to train it
+* Often try of multiple combinations to find the optimal solution is needed
 '''
 # Review ./experiments/* which includes example pipeline steps
 experiment_folder = './experiments'                                 # Pipeline steps folder
@@ -45,29 +45,30 @@ script_config = ScriptRunConfig(                                # Represents con
 '''
 Hyperparameter search space
 * Discrete hyperparameters
+    * choice:                       Returns a choice among discrete values
     * quniform(low, high, q):       Returns a value like round(uniform(low, high) / q) * q
     * qloguniform(low, high, q):    Returns a value like round(exp(uniform(low, high)) / q) * q
     * qnormal(mu, sigma, q):        Returns a value like round(normal(mu, sigma) / q) * q
     * qlognormal(mu, sigma, q):     Returns a value like round(exp(normal(mu, sigma)) / q) * q
 * Continuous hyperparameters
     * uniform(low, high):       Returns a value uniformly distributed between low and high
-    * loguniform(low, high):    Returns a value drawn according to exp(uniform(low, high)) so that the logarithm of the return value is uniformly distributed
+    * loguniform(low, high):    Returns a value drawn according to exp(uniform(low, high)) so that logarithm of return value is uniformly distributed
     * normal(mu, sigma):        Returns a real value that's normally distributed with mean mu and standard deviation sigma
-    * lognormal(mu, sigma):     Returns a value drawn according to exp(normal(mu, sigma)) so that the logarithm of the return value is normally distributed
+    * lognormal(mu, sigma):     Returns a value drawn according to exp(normal(mu, sigma)) so that logarithm of return value is normally distributed
 
 Sampling hyperparameter search space
 * Random sampling: 
     * Supports discrete and continuous hyperparameters
     * Supports early termination of low-performance runs
-    * Hyperparameter values are randomly selected from the defined search space
+    * Hyperparameter values are randomly selected from defined search space
 * Grid sampling
-    * supports discrete hyperparameters
+    * Supports discrete hyperparameters
     * Supports early termination of low-performance runs
     * Simple grid search over all possible values
     * Only be used with choice hyperparameters
 * Bayesian sampling
     * Picks samples based on how previous samples did, so that new samples improve the primary metric
-    * supports choice, uniform, and quniform distributions
+    * Supports choice, uniform, and quniform distributions
 '''
 # Sample a range of parameter values
 params = GridParameterSampling(                                 # Defines grid sampling over a hyperparameter search space

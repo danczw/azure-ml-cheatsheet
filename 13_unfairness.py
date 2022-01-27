@@ -101,7 +101,7 @@ Mitigating unfairness
 
 Fairlearn unfairnes mitigation algorithms
 * Exponentiated Gradient
-    * Reduction technique that applies a cost-minimization approach to learn optiamal trade.off of overall predictive performance and fairness disparity
+    * Reduction technique that applies a cost-minimization approach to learn optiamal trade-off of overall predictive performance and fairness disparity
     * Supports binary classification and regression
 * Grid Search
     * Simplified version of Exponentiated Gradient algorithm
