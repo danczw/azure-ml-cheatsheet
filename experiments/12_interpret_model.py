@@ -11,7 +11,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve
 
-# Get the experiment run context
+# Method to retrieve the experiment run context when the script is run
 run = Run.get_context()
 
 #-----DATA---------------------------------------------------------------------#
@@ -20,12 +20,16 @@ print("Loading Data...")
 data = run.input_datasets['training_data'].to_pandas_dataframe()
 
 # Separate features and labels
-features = ['Pregnancies','PlasmaGlucose','DiastolicBloodPressure','TricepsThickness','SerumInsulin','BMI','DiabetesPedigree','Age']
+features = ['Pregnancies', 'PlasmaGlucose', 'DiastolicBloodPressure',
+            'TricepsThickness','SerumInsulin','BMI','DiabetesPedigree','Age']
 labels = ['not-diabetic', 'diabetic']
 X, y = data[features].values, data['Diabetic'].values
 
 # Split data into training set and test set
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                    test_size=0.30,
+                                                    random_state=0
+                                                   )
 
 #-----MODEL--------------------------------------------------------------------#
 # Train a decision tree model

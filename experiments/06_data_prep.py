@@ -5,8 +5,8 @@ import pandas as pd
 from azureml.core import Run
 from sklearn.preprocessing import MinMaxScaler
 
-# Get the experiment run context
-run = Run.get_context() 	                                        # method to retrieve the experiment run context when the script is run
+# Method to retrieve the experiment run context when the script is run
+run = Run.get_context()
 
 #-----EXPERIMENT_PARAMETER-----------------------------------------------------#
 '''
@@ -30,7 +30,9 @@ parser.add_argument(
     default='prepped_data',
     help='Folder for results'
 )
-args = parser.parse_args()                                      # Add arguments to args collection
+
+# Add arguments to args collection
+args = parser.parse_args()
 save_folder = args.prepped_data
 
 #-----DATA---------------------------------------------------------------------#

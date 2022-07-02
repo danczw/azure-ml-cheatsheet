@@ -4,8 +4,8 @@ from azureml.core import Run
 import pandas as pd
 import os
 
-# Get the experiment run context
-run = Run.get_context() 	                                        # method to retrieve the experiment run context when the script is run
+# Method to retrieve the experiment run context when the script is run
+run = Run.get_context()
 
 #-----EXPERIMENT_PARAMETER-----------------------------------------------------#
 '''
@@ -21,7 +21,8 @@ parser.add_argument(
     help='raw dataset'
 )
 
-args = parser.parse_args()                                      # Add arguments to args collection
+# Add arguments to args collection
+args = parser.parse_args()
 
 #-----DATA---------------------------------------------------------------------#
 # load the data (passed as an input dataset)

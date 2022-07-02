@@ -11,8 +11,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve
 
-# Get the experiment run context
-run = Run.get_context() 	                                        # method to retrieve the experiment run context when the script is run
+# Method to retrieve the experiment run context when the script is run
+run = Run.get_context()
 
 #-----EXPERIMENT_PARAMETER-----------------------------------------------------#
 '''
@@ -21,9 +21,22 @@ Experiment Parameter
 * Enabling to repeat the same training experiment with different settings
 '''
 parser = argparse.ArgumentParser()
-parser.add_argument('--training-data', type=str, dest='training_data', help='training data')
-parser.add_argument('--regularization', type=float, dest='reg_rate', default=0.01, help='regularization rate')
-args = parser.parse_args()                                          # Add arguments to args collection
+parser.add_argument(
+    '--training-data',
+    type=str,
+    dest='training_data',
+    help='training data'
+)
+parser.add_argument(
+    '--regularization',
+    type=float,
+    dest='reg_rate',
+    default=0.01,
+    help='regularization rate'
+)
+
+# Add arguments to args collection
+args = parser.parse_args()
 
 # Set training data from prepared data
 training_data = args.training_data
@@ -38,10 +51,15 @@ file_path = os.path.join(training_data,'data.csv')
 diabetes = pd.read_csv(file_path)
 
 # Separate features and labels
-X, y = diabetes[['Pregnancies','PlasmaGlucose','DiastolicBloodPressure','TricepsThickness','SerumInsulin','BMI','DiabetesPedigree','Age']].values, diabetes['Diabetic'].values
+X, y = diabetes[['Pregnancies', 'PlasmaGlucose', 'DiastolicBloodPressure',
+                 'TricepsThickness','SerumInsulin','BMI','DiabetesPedigree','Age'
+                ]].values, diabetes['Diabetic'].values
 
 # Split data into training set and test set
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                    test_size=0.30,
+                                                    random_state=0
+                                                   )
 
 #-----MODEL--------------------------------------------------------------------#
 # Train a logistic regression model
